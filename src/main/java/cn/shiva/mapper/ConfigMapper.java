@@ -15,4 +15,10 @@ public interface ConfigMapper {
      */
     @Select("SELECT name FROM sqlite_master WHERE type='table' AND name= #{tableName}")
     String judgeTableExist(@Param("tableName") String tableName);
+
+    /**
+     * 拿到指定configKey的数据
+     */
+    @Select("SELECT config_value FROM sys_config WHERE config_key = #{key}")
+    String key(@Param("key") String key);
 }

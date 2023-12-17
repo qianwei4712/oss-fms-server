@@ -2,12 +2,14 @@ package cn.shiva.core.interceptor;
 
 import cn.shiva.core.domain.R;
 import cn.shiva.core.domain.RsaContentDTO;
+import cn.shiva.service.ConfigService;
 import cn.shiva.utils.RsaUtil;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -26,6 +28,8 @@ public class ApiInterceptor implements HandlerInterceptor {
     private String privateKey;
     @Value("${api.sourceCode}")
     private String sourceCode;
+    @Autowired
+    private ConfigService configService;
 
     /**
      * 使用JWT进行校验，参数放到负载内
@@ -37,6 +41,7 @@ public class ApiInterceptor implements HandlerInterceptor {
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Headers", "x-requested-with,X-Nideshop-Token,X-URL-PATH,content-type");
+        //TODO 如果初始化未完成，先提示跳到初始化流程界面：密码未设置、OSS未配置
 
         //token，就是加密文本
         String token = request.getHeader("Authorization");
@@ -77,8 +82,12 @@ public class ApiInterceptor implements HandlerInterceptor {
             sendJsonMessage(response, R.fail(403, "签名验证失败。请检查后重试!"));
             return false;
         }
-        //TODO 最后需要做检验，是否密码正确
-
+        // 最后需要做检验，是否密码正确
+        String password = configService.password();
+        if (StringUtils.isBlank(password) || !password.equals(rsaContentDTO.getKey())) {
+            sendJsonMessage(response, R.fail(403, "签名验证失败。请检查后重试!"));
+            return false;
+        }
         return true;
     }
 
