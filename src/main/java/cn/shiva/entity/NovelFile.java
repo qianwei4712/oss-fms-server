@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -15,6 +18,9 @@ import java.util.Date;
  */
 @Data
 @TableName("novel_file")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NovelFile {
     @TableId(type = IdType.AUTO)
     private Long id;
@@ -32,7 +38,7 @@ public class NovelFile {
     /**
      * 文件大小
      */
-    private Integer size;
+    private Long size;
 
     /**
      * 最后修改时间
@@ -45,4 +51,8 @@ public class NovelFile {
      */
     private String ossPath;
 
+    /**
+     * 路径名地址
+     */
+    private String filePath;
 }

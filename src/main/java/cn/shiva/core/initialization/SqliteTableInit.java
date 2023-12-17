@@ -32,7 +32,7 @@ public class SqliteTableInit {
         //文件表
         tableName = configMapper.judgeTableExist("novel_file");
         if (StringUtils.isBlank(tableName)) {
-            createTable = "CREATE TABLE \"novel_file\"( \"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"name\" TEXT, \"sketch\" TEXT, \"size\" integer, \"last_modify_time\" text, \"oss_path\" TEXT);";
+            createTable = "CREATE TABLE \"novel_file\"( \"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"name\" TEXT, \"sketch\" TEXT, \"size\" integer, \"last_modify_time\" text, \"oss_path\" TEXT, \"file_path\" TEXT);";
             jdbcTemplate.update(createTable);
         }
         //标签中间表
@@ -44,7 +44,7 @@ public class SqliteTableInit {
         //回收站表
         tableName = configMapper.judgeTableExist("file_recovery");
         if (StringUtils.isBlank(tableName)) {
-            createTable = "CREATE TABLE \"file_recovery\"( \"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"name\" TEXT, \"sketch\" TEXT, \"size\" integer, \"last_modify_time\" text, \"oss_path\" TEXT);";
+            createTable = "CREATE TABLE \"file_recovery\"( \"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"name\" TEXT, \"sketch\" TEXT, \"size\" integer, \"last_modify_time\" text, \"oss_path\" TEXT, \"file_path\" TEXT);";
             jdbcTemplate.update(createTable);
         }
         //配置表

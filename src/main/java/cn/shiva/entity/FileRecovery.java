@@ -43,4 +43,9 @@ public class FileRecovery {
      * 全路径
      */
     private String ossPath;
+
+    /**
+     * 路径名地址
+     */
+    private String filePath;
 }
