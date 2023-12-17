@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    #相对位置配置方式
+    url: jdbc:sqlite:E:/fms.db
+    driver-class-name: org.sqlite.JDBC
+
+# mybatis-plus 配置
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: cn.shiva.entity
+
