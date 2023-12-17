@@ -19,5 +19,7 @@
 
 ### 项目内代码细节说明
 
-1. `SqliteTableInit` : 通过 `@PostConstruct` 自动创建SQLite表，执行DDL前先判断是否存在表
+1. 
+2. `SqliteTableInit` : 通过 `@PostConstruct` 自动创建SQLite表，执行DDL前先判断是否存在表
+3. `ApiInterceptor` ：拦截全部请求，通过 RSA 加密进行身份认证；RSA 解密后得到设定好的密码，再与系统缓存中的密码对比
 
