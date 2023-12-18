@@ -1,5 +1,7 @@
 package cn.shiva.mapper;
 
+import cn.shiva.entity.Config;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -8,7 +10,7 @@ import org.apache.ibatis.annotations.Select;
  * @author shiva   2023-12-17 15:40
  */
 @Mapper
-public interface ConfigMapper {
+public interface ConfigMapper extends BaseMapper<Config> {
 
     /**
      * 判断表是否存在
