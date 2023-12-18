@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>默认主页</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="renderer" content="webkit"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/static/plugin/elementPlus/index.css}" media="all">
+    <script th:src="@{/static/plugin/vue.global.js}"></script>
+    <script th:src="@{/static/plugin/elementPlus/index.full.js}"></script>
+
+</head>
+<body>
+<div id="app">
+    <el-button type="danger" @click="handleClick">111</el-button>
+    {{ value }}
+</div>
+
+<script>
+    Vue.createApp({
+        el: '#app',
+        data() {
+            return {
+                value: '555555'
+            }
+        },
+        methods: {
+            handleClick() {
+                alert(1)
+            }
+        }
+    }).use(ElementPlus).mount("#app");
+</script>
+</body>
+</html>

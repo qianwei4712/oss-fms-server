@@ -82,13 +82,7 @@ public class AliOssComponent {
         //删除转化过程中生成的缓存文件
         finalFile.delete();
 
-        return NovelFile.builder()
-                .name(originalFileNameOutSuffix)
-                .size(contentLength)
-                .lastModifyTime(new Date())
-                .ossPath(url)
-                .filePath(name)
-                .build();
+        return NovelFile.builder().name(originalFileNameOutSuffix).size(contentLength).lastModifyTime(new Date()).ossPath(url).filePath(name).build();
     }
 
     /**
@@ -169,6 +163,21 @@ public class AliOssComponent {
         // 删除srcobject.txt。
         ossClient.deleteObject(bucketName, sourceKey);
     }
+
+    /**
+     * 删除文件，从回收站内删除
+     *
+     * @param objectName 原路径，带路径和名字
+     */
+    public void deleteObject(String objectName) {
+        initClient();
+        ossClient.deleteObject(bucketName, objectName);
+    }
+
+    /**
+     * TODO 遍历bucket，然后全部信息都同步到sqlite，进行初始化
+     */
+
 
     private void initClient() {
         //初始化连接器

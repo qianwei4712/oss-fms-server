@@ -1,8 +1,16 @@
 spring:
+  thymeleaf:
+    enabled: true
+    prefix: classpath:/templates/
   datasource:
     #相对位置配置方式
     url: jdbc:sqlite:E:/fms.db
     driver-class-name: org.sqlite.JDBC
+  # 文件上传大小
+  servlet:
+    multipart:
+      max-file-size: 50
+      max-request-size: 50
 
 # mybatis-plus 配置
 mybatis-plus:
@@ -16,7 +24,7 @@ api:
 
 # 阿里云OSS
 aliOss:
-  endpoint: http://oss-cn-hangzhou.aliyuncs.com
+  endpoint: https://oss-cn-hangzhou.aliyuncs.com
   accessKeyId:
   accessKeySecret:
   bucketName:
