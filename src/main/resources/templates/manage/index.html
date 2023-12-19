@@ -11,28 +11,110 @@
     <link rel="stylesheet" type="text/css" th:href="@{/static/plugin/elementPlus/index.css}" media="all">
     <script th:src="@{/static/plugin/vue.global.js}"></script>
     <script th:src="@{/static/plugin/elementPlus/index.full.js}"></script>
+    <script th:src="@{/static/plugin/jsencrypt.min.js}"></script>
+    <script th:src="@{/static/common.js}"></script>
     <link rel="icon" th:href="@{/static/images/favicon.ico}" type="image/x-icon"/>
     <link rel="shortcut icon" th:href="@{/static/images/favicon.ico}"/>
 </head>
 <body>
 <div id="app">
-    <el-button type="danger" @click="handleClick">111</el-button>
-    {{ value }}
+    <!-- 右侧菜单引导悬浮框 -->
+    <div class="suspension-navigation">
+        <div class="navigation-item">
+            <el-button type="success">主页</el-button>
+        </div>
+        <div class="navigation-item">
+            <el-button type="primary">标签</el-button>
+        </div>
+        <div class="navigation-item">
+            <el-button type="danger">回收站</el-button>
+        </div>
+    </div>
+
+    <!-- TODO 上传到当前文件夹，最好有个刷新按钮 -->
+    <el-button @click="uploadDialog">上传到当前文件夹</el-button>
+    <!-- TODO 中间的文件列表，可以通过点击：进入文件夹、下载文件到电脑，主要功能：打标签、详情弹窗（显示/修改简述、移除标签、添加标签），其他功能（重命名、移动、删除） -->
+    <div>
+
+    </div>
+
+    <!-- 上传小说的弹窗 -->
+    <el-dialog v-model="uploadNovelDialog.open" title="文件上传" width="500px">
+        <el-row>
+            <el-col :span="4">
+                <div style="line-height: 32px">
+                    上传路径
+                </div>
+            </el-col>
+            <el-col :span="20">
+                <el-input v-model="currentStatus.path"></el-input>
+            </el-col>
+        </el-row>
+        <div style="margin-top: 20px">
+            <el-upload ref="upload" class="avatar-uploader" action="" :show-file-list="false" :drag="true"
+                       :auto-upload="false" :multiple="true" :headers="requestHeaders">
+                <svg viewBox="0 0 1024 1024" class="avatar-uploader-icon" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor"
+                          d="M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64h352z">
+                    </path>
+                </svg>
+            </el-upload>
+        </div>
+    </el-dialog>
+
 </div>
 <script>
     Vue.createApp({
         el: '#app',
         data() {
             return {
-                value: '555555'
+                requestHeaders: {
+                    'Authorization': '',
+                    'Auth-Source-Type': 'SERVERUI'
+                },
+                uploadNovelDialog: { //上传小说
+                    open: false,
+                },
+                currentStatus: { //记录页面的基础状态
+                    path: ''//当前文件夹路径
+                }
             }
         },
         methods: {
-            handleClick() {
-                alert(1)
+            //打开单个上传的弹窗，重置状态
+            uploadDialog() {
+                this.uploadNovelDialog.open = true
+                console.log(rsa('111'));
             }
         }
     }).use(ElementPlus).mount("#app");
 </script>
+<style>
+    .suspension-navigation {
+        max-width: 300px;
+        max-height: 500px;
+        border-radius: 15px;
+        position: absolute;
+        right: 100px;
+        top: 50px;
+        text-align: center;
+        opacity: 80%;
+        border: 1px #d7f6e4 solid;
+
+        .navigation-item {
+            margin: 5px 15px;
+        }
+    }
+
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 30px;
+        height: 30px;
+        line-height: 178px;
+        text-align: center;
+    }
+
+</style>
 </body>
 </html>

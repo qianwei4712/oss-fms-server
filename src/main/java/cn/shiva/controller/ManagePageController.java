@@ -1,6 +1,5 @@
 package cn.shiva.controller;
 
-import cn.shiva.mapper.ConfigMapper;
 import cn.shiva.service.ConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,7 @@ public class ManagePageController {
         configService.updateConfig("password", pwd);
         //是否需要继续引导
         String guideNext = judgeGuide();
-        return StringUtils.isBlank(guideNext) ? guideNext : "manage/index";
+        return StringUtils.isNotBlank(guideNext) ? guideNext : "manage/index";
     }
 
     /**
@@ -54,7 +53,7 @@ public class ManagePageController {
     @RequestMapping(value = {"", "/index"})
     public String index() {
         String guideNext = judgeGuide();
-        return StringUtils.isBlank(guideNext) ? guideNext : "manage/index";
+        return StringUtils.isNotBlank(guideNext) ? guideNext : "manage/index";
     }
 
 
