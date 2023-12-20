@@ -12,9 +12,11 @@
 
 服务后端：Springboot3.2 + JDK21 + mybatis plus + Sqlite3 + caffeine
 
-管理前端（不分离）：thymeleaf + vue3 + element plus；懒得做分离项目了
+终端页面（不分离、移动端）：thymeleaf + vue3 + vant4
 
-移动终端：
+> 本来想弄个管理后端网页的，想来想去懒得做；
+> 
+> 全部的操作都放在H5上，不做项目分离了部署麻烦
 
 ### 项目内代码细节说明
 

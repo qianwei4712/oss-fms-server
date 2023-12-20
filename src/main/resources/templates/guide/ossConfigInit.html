@@ -6,11 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="author" content="shiva"/>
     <meta name="renderer" content="webkit"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <link rel="stylesheet" type="text/css" th:href="@{/static/plugin/elementPlus/index.css}" media="all">
+    <link rel="stylesheet" type="text/css" th:href="@{/fms.css}" media="all">
     <script th:src="@{/static/plugin/vue.global.js}"></script>
-    <script th:src="@{/static/plugin/elementPlus/index.full.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/plugin/vant/index.css}" media="all">
+    <script th:src="@{/static/plugin/vant/vant.min.js}"></script>
     <link rel="icon" th:href="@{/static/images/favicon.ico}" type="image/x-icon"/>
     <link rel="shortcut icon" th:href="@{/static/images/favicon.ico}"/>
 </head>
@@ -45,7 +46,8 @@
                 window.location.href = '/m/pwdInit?pwd=' + this.pwd
             }
         }
-    }).use(ElementPlus).mount("#app");
+    }).use(vant).mount("#app");
+    const vt4 = vant;
 </script>
 </body>
 </html>

@@ -1,0 +1,9 @@
+.pwd-init-input {
+  margin-top: 30px;
+  height: 40px;
+  line-height: 40px;
+  width: 60%;
+  border-radius: 8px;
+  border: 1px solid #dedede;
+  text-indent: 10px;
+}

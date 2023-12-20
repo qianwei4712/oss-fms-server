@@ -6,15 +6,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="author" content="shiva"/>
     <meta name="renderer" content="webkit"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <link rel="stylesheet" type="text/css" th:href="@{/static/plugin/elementPlus/index.css}" media="all">
+    <link rel="stylesheet" type="text/css" th:href="@{/fms.css}" media="all">
     <script th:src="@{/static/plugin/vue.global.js}"></script>
-    <script th:src="@{/static/plugin/elementPlus/index.full.js}"></script>
-    <script th:src="@{/static/plugin/jsencrypt.min.js}"></script>
-    <script th:src="@{/static/common.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/plugin/vant/index.css}" media="all">
+    <script th:src="@{/static/plugin/vant/vant.min.js}"></script>
     <link rel="icon" th:href="@{/static/images/favicon.ico}" type="image/x-icon"/>
     <link rel="shortcut icon" th:href="@{/static/images/favicon.ico}"/>
+
+    <script th:src="@{/static/plugin/jsencrypt.min.js}"></script>
+    <script th:src="@{/static/common.js}"></script>
 </head>
 <body>
 <div id="app">
@@ -37,30 +39,6 @@
     <div>
 
     </div>
-
-    <!-- 上传小说的弹窗 -->
-    <el-dialog v-model="uploadNovelDialog.open" title="文件上传" width="500px">
-        <el-row>
-            <el-col :span="4">
-                <div style="line-height: 32px">
-                    上传路径
-                </div>
-            </el-col>
-            <el-col :span="20">
-                <el-input v-model="currentStatus.path"></el-input>
-            </el-col>
-        </el-row>
-        <div style="margin-top: 20px">
-            <el-upload ref="upload" class="avatar-uploader" action="" :show-file-list="false" :drag="true"
-                       :auto-upload="false" :multiple="true" :headers="requestHeaders">
-                <svg viewBox="0 0 1024 1024" class="avatar-uploader-icon" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="currentColor"
-                          d="M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64h352z">
-                    </path>
-                </svg>
-            </el-upload>
-        </div>
-    </el-dialog>
 
 </div>
 <script>
@@ -87,34 +65,8 @@
                 console.log(rsa('111'));
             }
         }
-    }).use(ElementPlus).mount("#app");
+    }).use(vant).mount("#app");
+    const vt4 = vant;
 </script>
-<style>
-    .suspension-navigation {
-        max-width: 300px;
-        max-height: 500px;
-        border-radius: 15px;
-        position: absolute;
-        right: 100px;
-        top: 50px;
-        text-align: center;
-        opacity: 80%;
-        border: 1px #d7f6e4 solid;
-
-        .navigation-item {
-            margin: 5px 15px;
-        }
-    }
-
-    .avatar-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        width: 30px;
-        height: 30px;
-        line-height: 178px;
-        text-align: center;
-    }
-
-</style>
 </body>
 </html>
