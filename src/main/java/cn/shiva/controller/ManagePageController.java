@@ -26,6 +26,8 @@ public class ManagePageController {
         switch (type) {
             case "password":
                 return "guide/passwordInit";
+            case "settings":
+                return "manage/settings";
             default:
                 return "manage/index";
         }

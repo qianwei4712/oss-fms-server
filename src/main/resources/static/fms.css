@@ -1,3 +1,11 @@
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+}
+
 .pwd-init-input {
   margin-top: 30px;
   height: 40px;
@@ -7,3 +15,5 @@
   border: 1px solid #dedede;
   text-indent: 10px;
 }
+
+.list-item-cell {}

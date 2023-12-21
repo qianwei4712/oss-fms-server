@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>默认主页</title>
+    <title>主页</title>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="author" content="shiva"/>
@@ -20,26 +20,29 @@
 </head>
 <body>
 <div id="app">
-    <!-- 右侧菜单引导悬浮框 -->
-    <div class="suspension-navigation">
-        <div class="navigation-item">
-            <el-button type="success">主页</el-button>
-        </div>
-        <div class="navigation-item">
-            <el-button type="primary">标签</el-button>
-        </div>
-        <div class="navigation-item">
-            <el-button type="danger">回收站</el-button>
-        </div>
-    </div>
-
-    <!-- TODO 上传到当前文件夹，最好有个刷新按钮 -->
-    <el-button @click="uploadDialog">上传到当前文件夹</el-button>
-    <!-- TODO 中间的文件列表，可以通过点击：进入文件夹、下载文件到电脑，主要功能：打标签、详情弹窗（显示/修改简述、移除标签、添加标签），其他功能（重命名、移动、删除） -->
+    <van-search
+            v-model="value"
+            placeholder="请输入搜索关键词"
+            @search="onSearch"
+    ></van-search>
     <div>
-
+        <!-- 文件树的区域 -->
+        <van-list
+                v-model:loading="treeData.loading"
+                :finished="treeData.finished"
+                finished-text="全部资源都在这里了~"
+                @load="onLoadTreeData"
+        >
+            <van-cell v-for="item in treeData.list" :key="item">
+                <div class="list-item-cell" style="display: flex;justify-content: space-between;">
+                    <div>{{item}}</div>
+                    <div>{{item}}</div>
+                </div>
+            </van-cell>
+        </van-list>
     </div>
 
+    <van-floating-bubble icon="cluster" @click="morePage"/>
 </div>
 <script>
     Vue.createApp({
@@ -55,14 +58,35 @@
                 },
                 currentStatus: { //记录页面的基础状态
                     path: ''//当前文件夹路径
+                },
+                treeData: {
+                    list: [],
+                    finished: false,
+                    loading: false
                 }
             }
         },
         methods: {
-            //打开单个上传的弹窗，重置状态
-            uploadDialog() {
-                this.uploadNovelDialog.open = true
-                console.log(rsa('111'));
+            morePage() {
+                window.location.href = '/m/page?type=settings'
+            },
+            onSearch() {
+                //TODO 点击搜索，跳转到另一个页面，直接展示结果
+            },
+            onLoadTreeData() {
+                // 异步更新数据
+                // setTimeout 仅做示例，真实场景中一般为 ajax 请求
+                setTimeout(() => {
+                    for (let i = 0; i < 10; i++) {
+                        this.treeData.list.push(this.treeData.list.length + 1);
+                    }
+                    // 加载状态结束
+                    this.treeData.loading = false;
+                    // 数据全部加载完成
+                    if (this.treeData.list.length >= 100) {
+                        this.treeData.finished = true;
+                    }
+                }, 1000);
             }
         }
     }).use(vant).mount("#app");

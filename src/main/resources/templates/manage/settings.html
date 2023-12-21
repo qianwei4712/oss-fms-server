@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>主页</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="author" content="shiva"/>
+    <meta name="renderer" content="webkit"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/fms.css}" media="all">
+    <script th:src="@{/static/plugin/vue.global.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/plugin/vant/index.css}" media="all">
+    <script th:src="@{/static/plugin/vant/vant.min.js}"></script>
+    <link rel="icon" th:href="@{/static/images/favicon.ico}" type="image/x-icon"/>
+    <link rel="shortcut icon" th:href="@{/static/images/favicon.ico}"/>
+
+    <script th:src="@{/static/plugin/jsencrypt.min.js}"></script>
+    <script th:src="@{/static/common.js}"></script>
+</head>
+<body>
+<div id="app">
+
+    <div style="text-align: center">
+        <img src="/static/images/material/推婴儿车.png" style="max-width: 60%"/>
+    </div>
+
+    <van-grid :column-num="3">
+        <van-grid-item icon="photo-o" text="标签管理"></van-grid-item>
+        <van-grid-item icon="photo-o" text="回收站"></van-grid-item>
+        <van-grid-item icon="photo-o" text="OSS数据初始化"></van-grid-item>
+        <van-grid-item icon="photo-o" text="OSS配置"></van-grid-item>
+        <van-grid-item icon="photo-o" text="数据导出"></van-grid-item>
+        <van-grid-item icon="photo-o" text="数据导入"></van-grid-item>
+        <van-grid-item icon="photo-o" text="修改密码"></van-grid-item>
+        <van-grid-item icon="photo-o" text="退出登录"></van-grid-item>
+    </van-grid>
+
+    <van-floating-bubble icon="wap-home" @click="homepage"/>
+</div>
+<script>
+    Vue.createApp({
+        el: '#app',
+        data() {
+            return {
+                requestHeaders: {
+                    'Authorization': '',
+                    'Auth-Source-Type': 'SERVERUI'
+                },
+            }
+        },
+        methods: {
+            homepage() {
+                window.location.href = '/m/index'
+            },
+
+        }
+    }).use(vant).mount("#app");
+    const vt4 = vant;
+</script>
+</body>
+</html>
