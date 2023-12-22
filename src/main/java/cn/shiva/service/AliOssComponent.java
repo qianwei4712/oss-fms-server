@@ -175,8 +175,36 @@ public class AliOssComponent {
     }
 
     /**
-     * TODO 遍历bucket，然后全部信息都同步到sqlite，进行初始化
+     * 根据前缀，获取到当前文件夹下的文件和文件夹；
+     * 例如，传入 novel/，返回的result.getObjectSummaries().key是文件名，result.getCommonPrefixes()是文件夹名字
+     *
+     * @param prefix 前缀文件夹，例如：novel/
      */
+    public ListObjectsV2Result listObjects(String prefix) {
+        initClient();
+
+        // 构造ListObjectsV2Request请求。
+        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request(bucketName);
+        // 设置prefix参数来获取fun目录下的所有文件与文件夹。
+        listObjectsV2Request.setPrefix(prefix);
+        // 设置正斜线（/）为文件夹的分隔符。
+        listObjectsV2Request.setDelimiter("/");
+        // 发起列举请求。
+        ListObjectsV2Result result = ossClient.listObjectsV2(listObjectsV2Request);
+        return result;
+       /* // 遍历文件。
+        System.out.println("Objects:");
+        // objectSummaries的列表中给出的是fun目录下的文件。
+        for (OSSObjectSummary objectSummary : result.getObjectSummaries()) {
+            System.out.println(objectSummary.getKey());
+        }
+        // 遍历commonPrefix。
+        System.out.println("\nCommonPrefixes:");
+        // commonPrefixs列表中显示的是fun目录下的所有子文件夹。由于fun/movie/001.avi和fun/movie/007.avi属于fun文件夹下的movie目录，因此这两个文件未在列表中。
+        for (String commonPrefix : result.getCommonPrefixes()) {
+            System.out.println(commonPrefix);
+        }*/
+    }
 
 
     private void initClient() {

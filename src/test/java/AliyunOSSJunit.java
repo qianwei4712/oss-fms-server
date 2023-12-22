@@ -1,5 +1,6 @@
 import cn.shiva.OssFmsServerApplication;
 import cn.shiva.service.AliOssComponent;
+import com.aliyun.oss.model.ListObjectsV2Result;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ public class AliyunOSSJunit {
     @Test
     public void initOssData() {
         //初始化OSS的数据到数据库
+        ListObjectsV2Result listObjectsV2Result = ossComponent.listObjects("novel/");
     }
 
     @Test

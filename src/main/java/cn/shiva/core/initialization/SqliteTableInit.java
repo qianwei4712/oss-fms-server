@@ -32,7 +32,7 @@ public class SqliteTableInit {
         //文件表
         tableName = configMapper.judgeTableExist("novel_file");
         if (StringUtils.isBlank(tableName)) {
-            createTable = "CREATE TABLE \"novel_file\"( \"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"name\" TEXT, \"sketch\" TEXT, \"size\" integer, \"last_modify_time\" text, \"oss_path\" TEXT, \"file_path\" TEXT);";
+            createTable = "CREATE TABLE \"novel_file\"( \"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"parent_id\" INTEGER, \"name\" TEXT, \"sketch\" TEXT, \"type\" TEXT, \"size\" integer, \"last_modify_time\" text, \"oss_path\" TEXT, \"file_path\" TEXT);";
             jdbcTemplate.update(createTable);
         }
         //标签中间表

@@ -3,6 +3,7 @@ import cn.shiva.entity.NovelFile;
 import cn.shiva.entity.NovelLabel;
 import cn.shiva.mapper.NovelFileMapper;
 import cn.shiva.mapper.NovelLabelMapper;
+import cn.shiva.service.SqliteService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ public class SqliteJunit {
     private NovelLabelMapper novelLabelMapper;
     @Autowired
     private NovelFileMapper novelFileMapper;
+    @Autowired
+    private SqliteService sqliteService;
 
     //测试mybatis搭配sqlite
     @Test
@@ -28,6 +31,10 @@ public class SqliteJunit {
         System.out.println(novelFile);
     }
 
+    @Test
+    public void initFromOss() {
+        sqliteService.initFromOss();
+    }
 
 
 }

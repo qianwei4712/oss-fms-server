@@ -26,6 +26,11 @@ public class NovelFile {
     private Long id;
 
     /**
+     * 上级ID
+     */
+    private Long parentId;
+
+    /**
      * 文件名称
      */
     private String name;
@@ -39,6 +44,12 @@ public class NovelFile {
      * 文件大小
      */
     private Long size;
+
+    /**
+     * 类型，file-文件；folder-文件夹
+     */
+    private String type;
+
 
     /**
      * 最后修改时间
