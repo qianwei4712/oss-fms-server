@@ -23,6 +23,14 @@ public class ConfigService {
     private ConfigMapper configMapper;
 
     /**
+     * 拿到登录后的UUID集合，如果redis存在key,那就返回true
+     */
+    public boolean judgeToken(String key) {
+        Object o = CacheUtil.get("TOKEN:" + key);
+        return o != null;
+    }
+
+    /**
      * 拿到本项目的密码；先拿缓存，缓存没有拿数据库
      */
     public String password() {
@@ -53,4 +61,5 @@ public class ConfigService {
         }
 
     }
+
 }

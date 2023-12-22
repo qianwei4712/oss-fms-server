@@ -13,7 +13,7 @@ public class RsaContentDTO {
      */
     private String code;
     /**
-     * 唯一键，这里传的是密码
+     * 唯一键，这里传的是token UUID
      */
     private String key;
 }

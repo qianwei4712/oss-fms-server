@@ -1,10 +1,14 @@
 package cn.shiva.controller;
 
 import cn.shiva.service.ConfigService;
+import cn.shiva.utils.CacheUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.UUID;
 
 /**
  * 管理端页面跳转
@@ -24,6 +28,8 @@ public class ManagePageController {
     @RequestMapping(value = {"/page"})
     public String page(String type) {
         switch (type) {
+            case "login":
+                return "manage/login";
             case "password":
                 return "guide/passwordInit";
             case "settings":
@@ -47,6 +53,30 @@ public class ManagePageController {
         //是否需要继续引导
         String guideNext = judgeGuide();
         return StringUtils.isNotBlank(guideNext) ? guideNext : "manage/index";
+    }
+
+    /**
+     * 根据输入的密码，登录后返回token
+     */
+    @RequestMapping(value = "login")
+    public String login(Model model, String pwd) {
+        //是否需要继续引导
+        String guideNext = judgeGuide();
+        if (StringUtils.isNotBlank(guideNext)) {
+            return guideNext;
+        }
+        //密码判断
+        String password = configService.password();
+        if (!pwd.equals(password)) {
+            //密码不对
+            return "manage/login";
+        }
+        //生成一个token，然后返回前端
+        String token = UUID.randomUUID().toString();
+        CacheUtil.put("TOKEN:" + token, 1);
+        //返回token到前端去
+        model.addAttribute("token", token);
+        return "manage/index";
     }
 
     /**

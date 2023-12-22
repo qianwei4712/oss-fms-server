@@ -21,6 +21,11 @@ public class AliyunOSSJunit {
     }
 
     @Test
+    public void initOssData() {
+        //初始化OSS的数据到数据库
+    }
+
+    @Test
     public void temporaryAccess() {
         String s = ossComponent.temporaryAccess("测试图片.png");
         System.out.println(s);

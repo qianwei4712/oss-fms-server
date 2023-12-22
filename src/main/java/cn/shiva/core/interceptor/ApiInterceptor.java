@@ -41,7 +41,6 @@ public class ApiInterceptor implements HandlerInterceptor {
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Headers", "x-requested-with,X-Nideshop-Token,X-URL-PATH,content-type");
-        //TODO 如果初始化未完成，先提示跳到初始化流程界面：密码未设置、OSS未配置
 
         //token，就是加密文本
         String token = request.getHeader("Authorization");
@@ -82,9 +81,8 @@ public class ApiInterceptor implements HandlerInterceptor {
             sendJsonMessage(response, R.fail(403, "签名验证失败。请检查后重试!"));
             return false;
         }
-        // 最后需要做检验，是否密码正确
-        String password = configService.password();
-        if (StringUtils.isBlank(password) || !password.equals(rsaContentDTO.getKey())) {
+        // 最后需要做检验，是否token存在
+        if (!configService.judgeToken(rsaContentDTO.getKey())) {
             sendJsonMessage(response, R.fail(403, "签名验证失败。请检查后重试!"));
             return false;
         }

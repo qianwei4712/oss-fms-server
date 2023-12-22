@@ -20,6 +20,7 @@
 </head>
 <body>
 <div id="app">
+    <input ref="token" name="token" th:value="${token}" type="hidden"/>
     <van-search
             v-model="value"
             placeholder="请输入搜索关键词"
@@ -66,7 +67,22 @@
                 }
             }
         },
+        created() {
+            const that = this
+            setTimeout(() => {
+                that.token();
+            }, 500)
+        },
         methods: {
+            token() {
+                const token = this.$refs.token.value
+                if (token == null || token  === '') {
+                    return false;
+                }
+                //将token保存到缓存，使用 sessionStorage 存储数据
+                sessionStorage.setItem('token', token);
+                console.log('当前token:' + sessionStorage.getItem('token'))
+            },
             morePage() {
                 window.location.href = '/m/page?type=settings'
             },

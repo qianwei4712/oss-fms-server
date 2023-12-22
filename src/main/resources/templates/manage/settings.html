@@ -26,14 +26,16 @@
     </div>
 
     <van-grid :column-num="3">
-        <van-grid-item icon="photo-o" text="标签管理"></van-grid-item>
-        <van-grid-item icon="photo-o" text="回收站"></van-grid-item>
-        <van-grid-item icon="photo-o" text="OSS数据初始化"></van-grid-item>
-        <van-grid-item icon="photo-o" text="OSS配置"></van-grid-item>
-        <van-grid-item icon="photo-o" text="数据导出"></van-grid-item>
-        <van-grid-item icon="photo-o" text="数据导入"></van-grid-item>
-        <van-grid-item icon="photo-o" text="修改密码"></van-grid-item>
-        <van-grid-item icon="photo-o" text="退出登录"></van-grid-item>
+        <van-grid-item icon="coupon" text="标签管理"></van-grid-item>
+        <van-grid-item icon="delete" text="回收站"></van-grid-item>
+        <van-grid-item icon="umbrella-circle" text="OSS数据初始化"></van-grid-item>
+        <van-grid-item icon="weapp-nav" text="OSS配置"></van-grid-item>
+        <van-grid-item icon="descending" text="数据导出"></van-grid-item>
+        <van-grid-item icon="ascending" text="数据导入"></van-grid-item>
+
+        <van-grid-item icon="stop-circle" text="修改密码" class="grid-green"
+                       @click="router('/m/page?type=password')"></van-grid-item>
+        <van-grid-item icon="sort" text="退出登录" class="grid-green" @click="logout"></van-grid-item>
     </van-grid>
 
     <van-floating-bubble icon="wap-home" @click="homepage"/>
@@ -53,7 +55,14 @@
             homepage() {
                 window.location.href = '/m/index'
             },
-
+            router(page) {
+                window.location.href = page
+            },
+            //退出登录，清楚缓存
+            logout() {
+                sessionStorage.removeItem('token');
+                window.location.href = '/m/page?type=login'
+            }
         }
     }).use(vant).mount("#app");
     const vt4 = vant;
