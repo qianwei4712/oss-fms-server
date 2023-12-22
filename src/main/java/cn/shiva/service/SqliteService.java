@@ -76,7 +76,7 @@ public class SqliteService {
         for (String commonPrefix : listObjectsV2Result.getCommonPrefixes()) {
             //组装数据保存数据库
             NovelFile build = NovelFile.builder()
-                    .name(CommonUtil.getNameFromPath(commonPrefix))
+                    .name(CommonUtil.getNameFromFolder(commonPrefix))
                     .type("folder")
                     .ossPath(commonPrefix)
                     .filePath("https://" + bucketName + areaSuffix + commonPrefix)

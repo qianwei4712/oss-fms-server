@@ -35,10 +35,25 @@
                 @load="onLoadTreeData"
         >
             <van-cell v-for="item in treeData.list" :key="item">
-                <div class="list-item-cell" style="display: flex;justify-content: space-between;">
-                    <div>{{item}}</div>
-                    <div>{{item}}</div>
-                </div>
+                <van-row>
+                    <van-col span="2">
+                        <div style="vertical-align: middle;line-height: 45px">
+                            <img v-if="item.type == 'file'" src="/static/images/icon/file.png" style="height: 35px">
+                            <img v-if="item.type == 'folder'" src="/static/images/icon/folder.png" style="height: 35px">
+                        </div>
+                    </van-col>
+                    <van-col span="20">
+                        <div style="text-align: left;margin-left: 15px" @click="pointItem(item)">
+                            <div style="font-weight: bold">{{item.name}}</div>
+                            <div>大小、标签</div>
+                        </div>
+                    </van-col>
+                    <van-col span="2">
+                        <div style="line-height: 45px;text-align: center">
+                            <van-icon name="ellipsis"/>
+                        </div>
+                    </van-col>
+                </van-row>
             </van-cell>
         </van-list>
     </div>
@@ -93,18 +108,35 @@
                 // 异步更新数据
                 // setTimeout 仅做示例，真实场景中一般为 ajax 请求
                 setTimeout(() => {
-                    //发请求，获取目录
-                    fetch('/api/novel/pageNovelAndFolder?parentId=' + that.currentStatus.pageId, {
-                        method: 'GET',
-                        headers: that.requestHeaders,
-                    }).then(response => response.json())
-                        .then(data => {
-                            // 数据全部加载完成
-                            console.log(data)
-                            that.treeData.loading = false;
-                            that.treeData.finished = true;
-                        })
+                    that.pageDataGet()
                 }, 800);
+            },
+            //点击项。点文件夹，进入下一级；点文件，先在线打开
+            pointItem(obj) {
+                if (obj.type === 'folder') {
+                    this.currentStatus.pageId = obj.id;
+                    //清空数据先
+                    this.treeData.list = []
+                    this.pageDataGet()
+                }
+                if (obj.type === 'file') {
+
+                }
+                console.log(obj)
+            },
+            pageDataGet() {
+                const that = this
+                //发请求，获取目录
+                fetch('/api/novel/pageNovelAndFolder?parentId=' + that.currentStatus.pageId, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        // 数据全部加载完成
+                        that.treeData.list = data.data
+                        that.treeData.loading = false;
+                        that.treeData.finished = true;
+                    })
             }
         }
     }).use(vant).mount("#app");

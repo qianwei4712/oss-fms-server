@@ -8,12 +8,23 @@ import org.apache.commons.lang3.StringUtils;
 public class CommonUtil {
 
     /**
-     * 将全路径，解析出文件名
+     * 将文件全路径，解析出文件名
      */
     public static String getNameFromPath(String path) {
         if (StringUtils.isBlank(path)) {
             return null;
         }
+        return path.substring(path.lastIndexOf("/") + 1);
+    }
+
+    /**
+     * 将文件夹全路径，解析出文件名
+     */
+    public static String getNameFromFolder(String path) {
+        if (StringUtils.isBlank(path)) {
+            return null;
+        }
+        path = path.substring(0, path.length() - 1);
         return path.substring(path.lastIndexOf("/") + 1);
     }
 
