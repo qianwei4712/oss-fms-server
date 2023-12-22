@@ -1,6 +1,7 @@
 package cn.shiva.service;
 
 import cn.shiva.entity.NovelFile;
+import com.alibaba.fastjson2.util.DateUtils;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.*;
@@ -82,7 +83,7 @@ public class AliOssComponent {
         //删除转化过程中生成的缓存文件
         finalFile.delete();
 
-        return NovelFile.builder().name(originalFileNameOutSuffix).size(contentLength).lastModifyTime(new Date()).ossPath(url).filePath(name).build();
+        return NovelFile.builder().name(originalFileNameOutSuffix).size(contentLength).lastModifyTime(DateUtils.format(new Date())).ossPath(url).filePath(name).build();
     }
 
     /**

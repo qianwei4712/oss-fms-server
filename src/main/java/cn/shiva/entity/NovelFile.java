@@ -55,7 +55,7 @@ public class NovelFile {
      * 最后修改时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date lastModifyTime;
+    private String lastModifyTime;
 
     /**
      * 全路径

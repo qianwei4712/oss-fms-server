@@ -15,14 +15,15 @@
 终端页面（不分离、移动端）：thymeleaf + vue3 + vant4
 
 > 本来想弄个管理后端网页的，想来想去懒得做；
-> 
+>
 > 全部的操作都放在H5上，不做项目分离了部署麻烦
 
 ### 项目内代码细节说明
 
 1. 请提前开好阿里云OSS的权限，我用的是RAM子账户，授权： AliyunSTSAssumeRoleAccess、AliyunOSSFullAccess
 2. `SqliteTableInit` : 通过 `@PostConstruct` 自动创建SQLite表，执行DDL前先判断是否存在表
-3. `ApiInterceptor` ：拦截全部请求，通过 RSA 加密进行身份认证；RSA 解密后得到设定好的密码，再与系统缓存中的密码对比
+3. `ApiInterceptor` ：拦截全部请求，通过 RSA 加密进行身份认证；RSA 解密后得到Token，再与登录时候生成的token对比
 4. `AliOssComponent` ：阿里云的方法工具类，文件全部在阿里云OSS，标签和信息在 SQLite，检索 SQLite 后，再从 OSS 下载
 5. `CacheUtil` ：基于 Caffeine 的简单封装，缓存工具类
+6. `SqliteService` ：包含OSS内文件初始化方法，从根目录开始将率先上传好的文件同步目录到本地
 

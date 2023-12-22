@@ -24,6 +24,16 @@ public class RsaUtil {
     private static final String RSA_SIGNATURE_ALGORITHM = "SHA1withRSA";
     private static final String RSA2_SIGNATURE_ALGORITHM = "SHA256withRSA";
 
+    public static void main(String[] args) throws Exception {
+//        String token = "GFta2yphboClSpmUctaVL7seUd4T1GVL+gu8SGhFf5J6nGtnQ9ZXAhtkAtpRGQ/HJ2/8ScGGMZpbxyEIDpVw4vZyUVfMNEQcv1Rk+7oO1zuz3uIz+fFha1YsciLKndCDJMuMfnrmHvEBhxRHuc3WWr6CfswYc0g1mrFOUPtF9NkFy05liPjQ+8Dr3ZZuJkBBNFAh2sp3l8731LsZMtCBjc8Befd+Qv/dTvsnH9KuwBVOvSOtob2n3xDiUkYbCBNCJId4KO71Hp7mY0w8Ly95uYthpZUNJNNtqTKyojQSUpNPQPa5TCuC3GJwElWkXX97nn0Nc6mTYGYtO1WJNMeaHQ==";
+//        String privateKey = "MIIEowIBAAKCAQEApGSw4voPCFI6jnJmMsuDZzfSbqsdcdvq/94LnImxLHNX/w1iKYuz0F2RHs+c8EbXzz3Bn5Z2yLdeCwWkPViuuQbv3KPIFmeq2+NFCajP/TEENSognTkgWczhsa/qczTgPM7+tgn84M+3DKETlcDwy0Ci3zW/sZDCQsgrA1dqYZgBHepXZXW0vwbRZQ9rHWGJNCBU3JaNROOI7M6jBcrrt0oPqYeX9BtEOKeNm9lAS6jwR0GudrLYKqBMOooSVauPvzNgJ1LJhiVj/VqiSVyagL2EcPRxVhqJj+OAictws5M1MPTW4Xon0KtJhkkQrE4Shn5oM0PwspTu1AIoBz1TaQIDAQABAoIBAHMl+GS0RO1OM6ftZ7pypNMa3bIY96H2KfAZR0bZh5mcHWoQpM53BXeQ4oKTZ9lBtg56snInQYKsNhpAVF+IC7Kcskx5CEDxUlN9KLFwZmdx+wGGRZv7FLbx9LCyiOUzh1Hwp6c47cFGnXAiL4a4w7GKz8rLaj9lJz0B2mcXxvMeFg5rYXixtZ8DAAD7wGiB6rdfN87HJDBX8OAS/e0Q7dduXQH8LEQriVP5W2tbhfJJiOqAaPklUTwoWEDNy1p2wKY+m2OBFr7+1sFFdEQTA0KAxu2jKZp2XxgygENDXq1D1mtn8g21X5PcdNmiVFKF9Xxvx/VOtv75sRSiZyt684UCgYEA4bS1UetiognZjfFG/EnvR7647RzuY8wkkZ0UtHnKzetU8hTIk4n4OLpbGVWAutMiK4CRPP6HzJPTmeFchO4ZLD1XKSAM2a73fweTWoOqtid5fwe66zFM2XjLOcTJ4ZezyYm/mUARoBlKGprx4Z5ipHUssbQUFpjecnQH38738YMCgYEAunVF0bJK5Pl3TkKUrbrmuummvT7fppPR/h7brTh+yAH+saWgPONmBMmKrV2LmkGgWoROuwpIVQgxlUU6zUMnuMxAntr9wun1XUnlkIpEhOqvNvgbEAIgohKdBy3q7GMrHYQjsZswGPpRJW1cctABUvwdbcUninpA4LWvDZTCr6MCgYAqAl51PuB+1GJ/vta9gm1c5yy4RVhBju+Hgrsl1D1hElofLKsget+Of3ERSA7Ltxx3CFkAB0fzVdhencmAnGhnCYu9hc+efKhoJlrQ0AzoFnTQpfmuaOCq4YbB29TPflLiQhc9SOV+7PYT+Z7npXkqrvyAnsnWYuGUX/BPQdB4TQKBgQCoZQltXQxuxy6Mq20Dieyfmi1QdNwf4Rih3NShGIjHsaWIYwDYfLbCVBK+h+FwqxxbI2rHWX4B7ah6G1AD2UaiizVBQp4zzoAehIKji3xeXmVny6MFTiaSuSTAOyQT4Wwq+BAUcwd5R3jJyH7Z4imP/MnHPWt8kPTO/MbgCR3a6QKBgDwtVQ/E7zQjLUTSCUVar7ENx/jPwWj1cE0FZT1GTGL+IFDIFkPmy0kAGMdhqYfyqTdH2fCYqVwoCOJP9e/W+YhsWWDfFWyFyq8HWjFBkJAG7U8j2yPIpqCI2UNT1gIdnpucf2wqMKBKeH0JdsX3t4wHlp/UaiuMcVgr2PzZ+izG";
+//        System.out.println(decryptByPrivateKey(token, privateKey));
+//        generateKey()
+        Map<String, String> map = generateKey(2048);
+        System.out.println(map.get("publicKey"));
+        System.out.println(map.get("privateKey"));
+    }
+
     /**
      * 生成密钥对
      *

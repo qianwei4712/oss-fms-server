@@ -14,7 +14,7 @@ public class CommonUtil {
         if (StringUtils.isBlank(path)) {
             return null;
         }
-        return path.substring(path.lastIndexOf("/"));
+        return path.substring(path.lastIndexOf("/") + 1);
     }
 
     public static long calcFileSize(Long size) {

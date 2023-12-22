@@ -4,6 +4,7 @@ import cn.shiva.entity.NovelFile;
 import cn.shiva.mapper.NovelFileMapper;
 import cn.shiva.mapper.SqliteMapper;
 import cn.shiva.utils.CommonUtil;
+import com.alibaba.fastjson2.util.DateUtils;
 import com.aliyun.oss.model.ListObjectsV2Result;
 import com.aliyun.oss.model.OSSObjectSummary;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +63,7 @@ public class SqliteService {
                     .name(CommonUtil.getNameFromPath(key))
                     .size(CommonUtil.calcFileSize(objectSummary.getSize()))
                     .type("file")
-                    .lastModifyTime(objectSummary.getLastModified())
+                    .lastModifyTime(DateUtils.format(objectSummary.getLastModified()))
                     .ossPath(key)
                     .filePath("https://" + bucketName + areaSuffix + key)
                     .parentId(parentId)

@@ -43,22 +43,19 @@
         </van-list>
     </div>
 
-    <van-floating-bubble icon="cluster" @click="morePage"/>
+    <van-floating-bubble icon="cluster" @click="morePage"></van-floating-bubble>
 </div>
 <script>
     Vue.createApp({
         el: '#app',
         data() {
             return {
-                requestHeaders: {
-                    'Authorization': '',
-                    'Auth-Source-Type': 'SERVERUI'
-                },
+                requestHeaders: {},
                 uploadNovelDialog: { //上传小说
                     open: false,
                 },
                 currentStatus: { //记录页面的基础状态
-                    path: ''//当前文件夹路径
+                    pageId: 0, //当前文件夹的ID，根目录为0；其他二级菜单都有上级目录
                 },
                 treeData: {
                     list: [],
@@ -71,12 +68,14 @@
             const that = this
             setTimeout(() => {
                 that.token();
-            }, 500)
+                //再计算RSA加密
+                that.requestHeaders = commonHeaders()
+            }, 200)
         },
         methods: {
             token() {
                 const token = this.$refs.token.value
-                if (token == null || token  === '') {
+                if (token == null || token === '') {
                     return false;
                 }
                 //将token保存到缓存，使用 sessionStorage 存储数据
@@ -90,19 +89,22 @@
                 //TODO 点击搜索，跳转到另一个页面，直接展示结果
             },
             onLoadTreeData() {
+                const that = this
                 // 异步更新数据
                 // setTimeout 仅做示例，真实场景中一般为 ajax 请求
                 setTimeout(() => {
-                    for (let i = 0; i < 10; i++) {
-                        this.treeData.list.push(this.treeData.list.length + 1);
-                    }
-                    // 加载状态结束
-                    this.treeData.loading = false;
-                    // 数据全部加载完成
-                    if (this.treeData.list.length >= 100) {
-                        this.treeData.finished = true;
-                    }
-                }, 1000);
+                    //发请求，获取目录
+                    fetch('/api/novel/pageNovelAndFolder?parentId=' + that.currentStatus.pageId, {
+                        method: 'GET',
+                        headers: that.requestHeaders,
+                    }).then(response => response.json())
+                        .then(data => {
+                            // 数据全部加载完成
+                            console.log(data)
+                            that.treeData.loading = false;
+                            that.treeData.finished = true;
+                        })
+                }, 800);
             }
         }
     }).use(vant).mount("#app");

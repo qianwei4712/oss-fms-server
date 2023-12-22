@@ -1,7 +1,14 @@
 package cn.shiva.controller;
 
+import cn.shiva.core.domain.R;
+import cn.shiva.entity.NovelFile;
+import cn.shiva.mapper.NovelFileMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author shiva   2023-12-17 23:00
@@ -9,6 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/novel")
 public class NovelController {
+
+    @Autowired
+    private NovelFileMapper novelFileMapper;
+
+    /**
+     * 根据上级目录id,查询列表；
+     * 文件夹在最前面，下级文件不直接展示
+     */
+    @GetMapping("pageNovelAndFolder")
+    public R<List<NovelFile>> pageNovelAndFolder(Long parentId) {
+        List<NovelFile> list = novelFileMapper.listByParentId(parentId);
+        return R.ok(list);
+    }
+
 
     //TODO 上传单个小说：可以填写简述
 
@@ -20,7 +41,6 @@ public class NovelController {
 
     //TODO 更新简述，其他信息不允许更新
 
-    //TODO 在目录下，进行分页查询；文件夹在最前面，下级文件不直接展示
 
     //TODO 删除文件，进入回收站
 
