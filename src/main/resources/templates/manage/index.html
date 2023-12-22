@@ -25,6 +25,9 @@
             v-model="value"
             placeholder="请输入搜索关键词"
             @search="onSearch"
+            action-text="返回"
+            show-action
+            @cancel="back"
     ></van-search>
     <div>
         <!-- 文件树的区域 -->
@@ -58,7 +61,21 @@
         </van-list>
     </div>
 
-    <van-floating-bubble icon="cluster" @click="morePage"></van-floating-bubble>
+    <!-- 底部弹窗 -->
+    <van-action-sheet v-model:show="funcDialog.show">
+        <div style="margin: 15px">
+            <van-grid square :column-num="3">
+                <van-grid-item icon="medal-o" text="下载"></van-grid-item>
+                <van-grid-item icon="comment-o" text="打标签"></van-grid-item>
+                <van-grid-item icon="setting-o" text="描述"></van-grid-item>
+                <van-grid-item icon="aim" text="重命名"></van-grid-item>
+                <van-grid-item icon="exchange" text="移动"></van-grid-item>
+                <van-grid-item icon="delete-o" text="删除"></van-grid-item>
+            </van-grid>
+        </div>
+    </van-action-sheet>
+    <van-floating-bubble icon="cluster" @click="morePage" ></van-floating-bubble>
+    <van-floating-bubble icon="arrow-left" @click="back" ></van-floating-bubble>
 </div>
 <script>
     Vue.createApp({
@@ -71,11 +88,15 @@
                 },
                 currentStatus: { //记录页面的基础状态
                     pageId: 0, //当前文件夹的ID，根目录为0；其他二级菜单都有上级目录
+                    oldPageId: 0,//上一页的文件夹ID
                 },
                 treeData: {
                     list: [],
                     finished: false,
                     loading: false
+                },
+                funcDialog: {// 功能弹窗
+                    show: false,
                 }
             }
         },
@@ -111,18 +132,26 @@
                     that.pageDataGet()
                 }, 800);
             },
+            //返回上一级
+            back() {
+                this.currentStatus.pageId = Number(this.currentStatus.oldPageId)
+                this.currentStatus.oldPageId = 0;
+                //清空数据先
+                this.treeData.list = []
+                this.pageDataGet()
+            },
             //点击项。点文件夹，进入下一级；点文件，先在线打开
             pointItem(obj) {
                 if (obj.type === 'folder') {
+                    this.currentStatus.oldPageId = Number(this.currentStatus.pageId)
                     this.currentStatus.pageId = obj.id;
                     //清空数据先
                     this.treeData.list = []
                     this.pageDataGet()
                 }
-                if (obj.type === 'file') {
-
+                if (obj.type === 'file') {//打开功能弹窗
+                    this.funcDialog.show = true
                 }
-                console.log(obj)
             },
             pageDataGet() {
                 const that = this
