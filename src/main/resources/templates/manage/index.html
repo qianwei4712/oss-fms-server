@@ -48,7 +48,12 @@
                     <van-col span="20">
                         <div style="text-align: left;margin-left: 15px" @click="pointItem(item)">
                             <div style="font-weight: bold">{{item.name}}</div>
-                            <div>大小、标签</div>
+                            <div>
+                                <van-row gutter="20">
+                                    <van-col span="18">标签组</van-col>
+                                    <van-col span="6" style="font-size: 12px;text-align: right" v-if="item.size > 0">{{item.size}} Kb</van-col>
+                                </van-row>
+                            </div>
                         </div>
                     </van-col>
                     <van-col span="2">
