@@ -28,7 +28,8 @@
     <van-grid :column-num="3">
         <van-grid-item icon="coupon" text="标签管理"></van-grid-item>
         <van-grid-item icon="delete" text="回收站"></van-grid-item>
-        <van-grid-item icon="umbrella-circle" text="OSS数据初始化"></van-grid-item>
+        <van-grid-item icon="umbrella-circle" text="OSS数据初始化" class="grid-green"
+                       @click="ossInitConfirm"></van-grid-item>
         <van-grid-item icon="weapp-nav" text="OSS配置"></van-grid-item>
         <van-grid-item icon="descending" text="数据导出"></van-grid-item>
         <van-grid-item icon="ascending" text="数据导入"></van-grid-item>
@@ -45,11 +46,14 @@
         el: '#app',
         data() {
             return {
-                requestHeaders: {
-                    'Authorization': '',
-                    'Auth-Source-Type': 'SERVERUI'
-                },
+                requestHeaders: {},
             }
+        },
+        created() {
+            const that = this
+            setTimeout(() => {
+                that.requestHeaders = commonHeaders()
+            }, 200)
         },
         methods: {
             homepage() {
@@ -62,6 +66,31 @@
             logout() {
                 sessionStorage.removeItem('token');
                 window.location.href = '/m/page?type=login'
+            },
+            //确认重置数据，从OSS拉到本地
+            ossInitConfirm() {
+                vt4.showConfirmDialog({
+                    title: '',
+                    message: '从OSS初始化数据到本地，会清空本地文件数据和标签关系！！请谨慎操作。',
+                }).then(() => {
+                    vt4.showConfirmDialog({
+                        title: '',
+                        message: '再确认一次，数据会清空！！！',
+                    }).then(() => {
+
+                        const that = this
+                        //发请求，获取目录
+                        fetch('/api/novel/initFromOss', {
+                            method: 'GET',
+                            headers: that.requestHeaders,
+                        }).then(response => response.json())
+                            .then(data => {
+                                vt4.showNotify({type: 'success', message: '重置成功'});
+                            })
+                    }).catch(() => {
+                    })
+                }).catch(() => {
+                })
             }
         }
     }).use(vant).mount("#app");

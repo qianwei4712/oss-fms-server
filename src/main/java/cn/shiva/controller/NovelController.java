@@ -3,6 +3,7 @@ package cn.shiva.controller;
 import cn.shiva.core.domain.R;
 import cn.shiva.entity.NovelFile;
 import cn.shiva.mapper.NovelFileMapper;
+import cn.shiva.service.SqliteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,8 @@ public class NovelController {
 
     @Autowired
     private NovelFileMapper novelFileMapper;
+    @Autowired
+    private SqliteService sqliteService;
 
     /**
      * 根据上级目录id,查询列表；
@@ -30,6 +33,14 @@ public class NovelController {
         return R.ok(list);
     }
 
+    /**
+     * 清空数据库，从OSS重置
+     */
+    @GetMapping("initFromOss")
+    public R<String> initFromOss() {
+        sqliteService.initFromOss();
+        return R.ok();
+    }
 
     //TODO 上传单个小说：可以填写简述
 
