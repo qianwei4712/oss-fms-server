@@ -21,3 +21,16 @@ body {
 .grid-green {
   color:green
 }
+
+.label-container {
+  white-space: nowrap;
+  overflow-x: scroll;
+}
+
+.label-container span {
+  margin-right: 3px;
+}
+
+.label-container::-webkit-scrollbar {
+  display: none;
+}

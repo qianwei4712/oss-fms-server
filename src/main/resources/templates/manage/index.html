@@ -51,9 +51,10 @@
                             <div>
                                 <van-row gutter="20">
                                     <van-col span="18">
-                                        <div style="white-space: nowrap;overflow-x: scroll;">
-                                            <!--                                        <van-tag type="primary" v-for="lable in item.labels">{{lable}}</van-tag>-->
-                                            <van-tag type="primary" v-for="i in 30">咨询</van-tag>
+                                        <div class="label-container">
+                                            <van-tag :type="randomType(index)" v-for="(lable, index) in item.labels">
+                                                {{lable}}
+                                            </van-tag>
                                         </div>
                                     </van-col>
                                     <van-col span="6" style="font-size: 12px;text-align: right" v-if="item.size > 0">
@@ -93,6 +94,7 @@
         el: '#app',
         data() {
             return {
+                types: ["primary", "success", "warning", "danger"],
                 requestHeaders: {},
                 uploadNovelDialog: { //上传小说
                     open: false,
@@ -120,6 +122,9 @@
             }, 200)
         },
         methods: {
+            randomType(index) {
+                return this.types[index % 4];
+            },
             token() {
                 const token = this.$refs.token.value
                 if (token == null || token === '') {
