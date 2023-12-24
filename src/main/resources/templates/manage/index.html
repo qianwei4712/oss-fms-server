@@ -50,8 +50,15 @@
                             <div style="font-weight: bold">{{item.name}}</div>
                             <div>
                                 <van-row gutter="20">
-                                    <van-col span="18">标签组</van-col>
-                                    <van-col span="6" style="font-size: 12px;text-align: right" v-if="item.size > 0">{{item.size}} Kb</van-col>
+                                    <van-col span="18">
+                                        <div style="white-space: nowrap;overflow-x: scroll;">
+                                            <!--                                        <van-tag type="primary" v-for="lable in item.labels">{{lable}}</van-tag>-->
+                                            <van-tag type="primary" v-for="i in 30">咨询</van-tag>
+                                        </div>
+                                    </van-col>
+                                    <van-col span="6" style="font-size: 12px;text-align: right" v-if="item.size > 0">
+                                        {{item.size}} Kb
+                                    </van-col>
                                 </van-row>
                             </div>
                         </div>
@@ -79,7 +86,7 @@
             </van-grid>
         </div>
     </van-action-sheet>
-    <van-floating-bubble icon="cluster" @click="morePage" ></van-floating-bubble>
+    <van-floating-bubble icon="cluster" @click="morePage"></van-floating-bubble>
 </div>
 <script>
     Vue.createApp({

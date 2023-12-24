@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+
+<mapper namespace="cn.shiva.mapper.NovelLabelMapper">
+
+    <select id="listLabelsByNovelId" resultType="java.lang.String">
+        SELECT nl.name
+        FROM mid_file_label mfl
+        LEFT JOIN novel_file nf ON nf.id = mfl.file_id
+        LEFT JOIN novel_label nl ON nl.id = mfl.label_id
+        WHERE nf.id = #{novelId}
+    </select>
+</mapper>

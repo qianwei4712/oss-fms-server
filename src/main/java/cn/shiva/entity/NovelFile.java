@@ -1,6 +1,7 @@
 package cn.shiva.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -9,7 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * 小说文件表
@@ -66,4 +67,11 @@ public class NovelFile {
      * 路径名地址
      */
     private String filePath;
+
+    /**
+     * 该文件对应得标签
+     */
+    @TableField(exist = false)
+    private List<String> labels;
+
 }
