@@ -22,7 +22,7 @@
 <div id="app">
     <input ref="token" name="token" th:value="${token}" type="hidden"/>
     <van-search
-            v-model="value"
+            v-model="searchStr"
             placeholder="请输入搜索关键词"
             @search="onSearch"
             action-text="返回"
@@ -96,6 +96,7 @@
             return {
                 types: ["primary", "success", "warning", "danger"],
                 requestHeaders: {},
+                searchStr: '', //搜索框输入内容
                 uploadNovelDialog: { //上传小说
                     open: false,
                 },
@@ -139,7 +140,24 @@
                 window.location.href = '/m/page?type=settings'
             },
             onSearch() {
-                //TODO 点击搜索，跳转到另一个页面，直接展示结果
+                if (this.searchStr == null || this.searchStr.length === 0) {
+                    vt4.showToast('请输入搜索内容');
+                    return false
+                }
+                const that = this
+                this.treeData.list = []
+                //发请求，获取目录
+                fetch('/api/novel/searchNovel?key=' + that.searchStr, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        // 数据全部加载完成
+                        that.treeData.list = data.data
+                        that.treeData.loading = false;
+                        that.treeData.finished = true;
+                    })
+
             },
             onLoadTreeData() {
                 const that = this

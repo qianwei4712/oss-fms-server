@@ -6,4 +6,11 @@
     <select id="listByParentId" resultType="cn.shiva.entity.NovelFile">
         SELECT * FROM novel_file WHERE parent_id = #{parentId} ORDER BY type desc, name
     </select>
+    <select id="listBySearchParam" resultType="cn.shiva.entity.NovelFile">
+        SELECT * FROM novel_file
+        WHERE
+            name LIKE '%' || #{searchParam} || '%'
+        OR sketch LIKE '%' || #{searchParam} || '%'
+        ORDER BY type DESC, name
+    </select>
 </mapper>
