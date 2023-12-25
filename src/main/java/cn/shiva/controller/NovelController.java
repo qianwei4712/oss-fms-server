@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -74,6 +75,7 @@ public class NovelController {
             return R.ok();
         }
         String content = aliOssComponent.streamDownload(novelFile.getOssPath());
+        content = new String(content.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
         return R.ok(FileDownloadBO.builder()
                 .content(content)
                 .name(novelFile.getName())

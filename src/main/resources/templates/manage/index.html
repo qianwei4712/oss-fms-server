@@ -197,7 +197,7 @@
                     .then(data => {
                         console.log(data)
                         const text = data.data.content;
-                        const blob = new Blob([text], {type: 'text/plain'});
+                        const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
                         const url = URL.createObjectURL(blob);
 
                         const downloadLink = document.createElement('a');
