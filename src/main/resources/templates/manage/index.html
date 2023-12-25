@@ -78,7 +78,7 @@
     <van-action-sheet v-model:show="funcDialog.show">
         <div style="margin: 15px">
             <van-grid square :column-num="3">
-                <van-grid-item icon="medal-o" text="下载"></van-grid-item>
+                <van-grid-item icon="medal-o" text="下载" @click="download"></van-grid-item>
                 <van-grid-item icon="comment-o" text="打标签"></van-grid-item>
                 <van-grid-item icon="setting-o" text="描述"></van-grid-item>
                 <van-grid-item icon="aim" text="重命名"></van-grid-item>
@@ -102,6 +102,7 @@
                 currentStatus: { //记录页面的基础状态
                     pageId: 0, //当前文件夹的ID，根目录为0；其他二级菜单都有上级目录
                     oldPageId: 0,//上一页的文件夹ID
+                    clickItem: null, //当前点击得对象
                 },
                 treeData: {
                     list: [],
@@ -158,12 +159,14 @@
             },
             //点击项。点文件夹，进入下一级；点文件，先在线打开
             pointItem(obj) {
+                this.currentStatus.clickItem = obj
                 if (obj.type === 'folder') {
                     this.currentStatus.oldPageId = Number(this.currentStatus.pageId)
                     this.currentStatus.pageId = obj.id;
                     //清空数据先
                     this.treeData.list = []
                     this.pageDataGet()
+                    this.currentStatus.clickItem = null
                 }
                 if (obj.type === 'file') {//打开功能弹窗
                     this.funcDialog.show = true
@@ -181,6 +184,27 @@
                         that.treeData.list = data.data
                         that.treeData.loading = false;
                         that.treeData.finished = true;
+                    })
+            },
+            //下载文件
+            download() {
+                const that = this
+                //发请求，获取目录
+                fetch('/api/novel/downloadFromOss?novelId=' + that.currentStatus.clickItem.id, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        const text = data.data.content;
+                        const blob = new Blob([text], {type: 'text/plain'});
+                        const url = URL.createObjectURL(blob);
+
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = url;
+                        downloadLink.download = data.data.name;
+
+                        downloadLink.click();
                     })
             }
         }

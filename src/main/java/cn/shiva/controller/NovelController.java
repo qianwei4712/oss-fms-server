@@ -2,8 +2,10 @@ package cn.shiva.controller;
 
 import cn.shiva.core.domain.R;
 import cn.shiva.entity.NovelFile;
+import cn.shiva.entity.bo.FileDownloadBO;
 import cn.shiva.mapper.NovelFileMapper;
 import cn.shiva.mapper.NovelLabelMapper;
+import cn.shiva.service.AliOssComponent;
 import cn.shiva.service.SqliteService;
 import cn.shiva.utils.ThreadPool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +33,8 @@ public class NovelController {
     private NovelLabelMapper novelLabelMapper;
     @Autowired
     private ThreadPool pool;
+    @Autowired
+    private AliOssComponent aliOssComponent;
 
     /**
      * 根据上级目录id,查询列表；
@@ -57,6 +62,22 @@ public class NovelController {
     public R<String> initFromOss() {
         sqliteService.initFromOss();
         return R.ok();
+    }
+
+    /**
+     * 文件下载，先到OSS拿到文件字符串，返回回去在前端下载
+     */
+    @GetMapping("downloadFromOss")
+    public R<FileDownloadBO> downloadFromOss(Long novelId) throws IOException {
+        NovelFile novelFile = novelFileMapper.selectById(novelId);
+        if (novelFile == null) {
+            return R.ok();
+        }
+        String content = aliOssComponent.streamDownload(novelFile.getOssPath());
+        return R.ok(FileDownloadBO.builder()
+                .content(content)
+                .name(novelFile.getName())
+                .build());
     }
 
     //TODO 上传单个小说：可以填写简述
