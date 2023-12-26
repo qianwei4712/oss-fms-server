@@ -114,7 +114,7 @@ public class NovelController {
         if (novelId == null) {
             return R.fail("文件不存在");
         }
-        novelService.delete(novelId);
+        sqliteService.delete(novelId);
         return R.ok();
     }
 

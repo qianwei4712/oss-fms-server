@@ -84,7 +84,7 @@
                 <van-grid-item icon="setting-o" text="描述"></van-grid-item>
                 <van-grid-item icon="aim" text="重命名"></van-grid-item>
                 <van-grid-item icon="exchange" text="移动"></van-grid-item>
-                <van-grid-item icon="delete-o" text="删除"></van-grid-item>
+                <van-grid-item icon="delete-o" text="删除" @click="deleteNovel"></van-grid-item>
             </van-grid>
         </div>
     </van-action-sheet>
@@ -219,7 +219,6 @@
                     headers: that.requestHeaders,
                 }).then(response => response.json())
                     .then(data => {
-                        console.log(data)
                         const text = data.data.content;
                         const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
                         const url = URL.createObjectURL(blob);
@@ -229,6 +228,21 @@
                         downloadLink.download = data.data.name;
 
                         downloadLink.click();
+                    })
+            },
+            //下载
+            deleteNovel() {
+                const that = this
+                //发请求，获取目录
+                fetch('/api/novel/delete?novelId=' + that.currentStatus.clickItem.id, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        vt4.showToast('删除成功！');
+                        //移除当前行
+                        that.treeData.list.splice(that.treeData.list.indexOf(that.currentStatus.clickItem), 1)
+                        that.funcDialog.show = false
                     })
             }
         }

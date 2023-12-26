@@ -32,6 +32,8 @@ public class SqliteService {
     private AliOssComponent ossComponent;
     @Autowired
     private NovelFileMapper novelFileMapper;
+    @Autowired
+    private NovelService novelService;
 
     /**
      * 初始化OSS对应的文件树
@@ -85,5 +87,27 @@ public class SqliteService {
             novelFileMapper.insert(build);
             listOss2Db(commonPrefix, build.getId());
         }
+    }
+
+
+    /**
+     * 删除文件或者文件夹，进入回收站;
+     * 1.区分文件和文件夹
+     * 2.软删除，就是移动到回收站；
+     * 3.原有的标签全部清空
+     */
+    public void delete(Long novelId) {
+        NovelFile novelFile = novelFileMapper.selectById(novelId);
+        if (novelFile == null) {
+            return;
+        }
+        //判断类型
+        if ("file".equals(novelFile.getType())) {
+            novelService.deleteNovel(novelFile);
+        }
+        if ("folder".equals(novelFile.getType())) {
+
+        }
+
     }
 }

@@ -17,4 +17,8 @@ public interface NovelLabelMapper extends BaseMapper<NovelLabel> {
      * 根据文件id，拿到标签组
      */
     List<String> listLabelsByNovelId(@Param("novelId") Long novelId);
+    /**
+     * 根据novel id 删除标签关系
+     */
+    int deleteByNovelId(@Param("novelId") Long novelId);
 }
