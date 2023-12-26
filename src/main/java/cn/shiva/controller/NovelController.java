@@ -6,6 +6,7 @@ import cn.shiva.entity.bo.FileDownloadBO;
 import cn.shiva.mapper.NovelFileMapper;
 import cn.shiva.mapper.NovelLabelMapper;
 import cn.shiva.service.AliOssComponent;
+import cn.shiva.service.NovelService;
 import cn.shiva.service.SqliteService;
 import cn.shiva.utils.ThreadPool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class NovelController {
     private ThreadPool pool;
     @Autowired
     private AliOssComponent aliOssComponent;
+    @Autowired
+    private NovelService novelService;
 
     /**
      * 根据上级目录id,查询列表；
@@ -100,6 +103,22 @@ public class NovelController {
         return R.ok(list);
     }
 
+    /**
+     * 删除文件或者文件夹，进入回收站;
+     * 1.区分文件和文件夹
+     * 2.软删除，就是移动到回收站；
+     * 3.原有的标签全部清空
+     */
+    @GetMapping("delete")
+    public R<String> delete(Long novelId) throws Exception {
+        if (novelId == null) {
+            return R.fail("文件不存在");
+        }
+        novelService.delete(novelId);
+        return R.ok();
+    }
+
+
     //TODO 上传单个小说：可以填写简述
 
     //TODO 重命名文件
@@ -109,7 +128,5 @@ public class NovelController {
     //TODO 移动整个文件夹到新路径
 
     //TODO 更新简述，其他信息不允许更新
-
-    //TODO 删除文件，进入回收站
 
 }
