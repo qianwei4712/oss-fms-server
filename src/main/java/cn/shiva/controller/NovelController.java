@@ -52,6 +52,7 @@ public class NovelController {
         for (NovelFile novelFile : list) {
             pool.instance().execute(() -> {
                 novelFile.setLabels(novelLabelMapper.listLabelsByNovelId(novelFile.getId()));
+                novelFile.setRealPath(novelFile.getOssPath().replace("novel/", "").replace(novelFile.getName(), ""));
                 latch.countDown();
             });
         }
@@ -96,6 +97,7 @@ public class NovelController {
         for (NovelFile novelFile : list) {
             pool.instance().execute(() -> {
                 novelFile.setLabels(novelLabelMapper.listLabelsByNovelId(novelFile.getId()));
+                novelFile.setRealPath(novelFile.getOssPath().replace("novel/", "").replace(novelFile.getName(), ""));
                 latch.countDown();
             });
         }

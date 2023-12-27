@@ -49,6 +49,7 @@
                     <van-col span="20">
                         <div style="text-align: left;margin-left: 15px" @click="pointItem(item)">
                             <div style="font-weight: bold">{{item.name}}</div>
+                            <div style="font-size: 11px" v-if="currentStatus.searchResult">{{item.realPath}}</div>
                             <div>
                                 <van-row gutter="20">
                                     <van-col span="18">
@@ -105,6 +106,7 @@
                     pageId: 0, //当前文件夹的ID，根目录为0；其他二级菜单都有上级目录
                     oldPageId: 0,//上一页的文件夹ID
                     clickItem: null, //当前点击得对象
+                    searchResult: false, //当前列表是否是检索结果
                 },
                 treeData: {
                     list: [],
@@ -153,6 +155,7 @@
                     headers: that.requestHeaders,
                 }).then(response => response.json())
                     .then(data => {
+                        that.currentStatus.searchResult = true;
                         // 数据全部加载完成
                         that.treeData.list = data.data
                         that.treeData.loading = false;
@@ -204,6 +207,7 @@
                     headers: that.requestHeaders,
                 }).then(response => response.json())
                     .then(data => {
+                        that.currentStatus.searchResult = false;
                         // 数据全部加载完成
                         that.treeData.list = data.data
                         that.treeData.loading = false;

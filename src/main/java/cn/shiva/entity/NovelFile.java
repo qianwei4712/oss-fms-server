@@ -73,5 +73,9 @@ public class NovelFile {
      */
     @TableField(exist = false)
     private List<String> labels;
-
+    /**
+     * 目录位置，去除了名字和头部
+     */
+    @TableField(exist = false)
+    private String realPath;
 }
