@@ -106,7 +106,7 @@ public class SqliteService {
             novelService.deleteNovel(novelFile);
         }
         if ("folder".equals(novelFile.getType())) {
-
+            //TODO 批量删除后面再做
         }
 
     }
