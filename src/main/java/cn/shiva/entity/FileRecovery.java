@@ -1,6 +1,7 @@
 package cn.shiva.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -31,6 +32,11 @@ public class FileRecovery {
     private Long size;
 
     /**
+     * 类型，file-文件；folder-文件夹
+     */
+    private String type;
+
+    /**
      * 最后修改时间
      */
     private String lastModifyTime;
@@ -44,4 +50,9 @@ public class FileRecovery {
      * 路径名地址
      */
     private String filePath;
+    /**
+     * 目录位置，去除了名字和头部
+     */
+    @TableField(exist = false)
+    private String realPath;
 }
