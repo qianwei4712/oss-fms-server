@@ -1,36 +1,41 @@
 html {
-  height: 100%;
+    height: 100%;
 }
 
 body {
-  height: 100%;
+    height: 100%;
 }
 
 .pwd-init-input {
-  margin-top: 30px;
-  height: 40px;
-  line-height: 40px;
-  width: 60%;
-  border-radius: 8px;
-  border: 1px solid #dedede;
-  text-indent: 10px;
+    margin-top: 30px;
+    height: 40px;
+    line-height: 40px;
+    width: 60%;
+    border-radius: 8px;
+    border: 1px solid #dedede;
+    text-indent: 10px;
 }
 
-.list-item-cell {}
+.list-item-cell {
+}
 
 .grid-green {
-  color:green
+    color: green
+}
+
+.grid-blue {
+    color: dodgerblue;
 }
 
 .label-container {
-  white-space: nowrap;
-  overflow-x: scroll;
+    white-space: nowrap;
+    overflow-x: scroll;
 }
 
 .label-container span {
-  margin-right: 3px;
+    margin-right: 3px;
 }
 
 .label-container::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
