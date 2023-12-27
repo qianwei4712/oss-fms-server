@@ -34,6 +34,8 @@ public class ManagePageController {
                 return "guide/passwordInit";
             case "settings":
                 return "manage/settings";
+            case "recovery":
+                return "manage/recovery";
             default:
                 return "manage/index";
         }

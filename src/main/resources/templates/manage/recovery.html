@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>回收站</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="author" content="shiva"/>
+    <meta name="renderer" content="webkit"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/fms.css}" media="all">
+    <script th:src="@{/static/plugin/vue.global.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/plugin/vant/index.css}" media="all">
+    <script th:src="@{/static/plugin/vant/vant.min.js}"></script>
+    <link rel="icon" th:href="@{/static/images/favicon.ico}" type="image/x-icon"/>
+    <link rel="shortcut icon" th:href="@{/static/images/favicon.ico}"/>
+
+    <script th:src="@{/static/plugin/jsencrypt.min.js}"></script>
+    <script th:src="@{/static/common.js}"></script>
+</head>
+<body>
+<div id="app">
+    <div>
+        <!-- 文件树的区域 -->
+        <van-list
+                v-model:loading="treeData.loading"
+                :finished="treeData.finished"
+                finished-text="全部资源都在这里了~"
+                @load="onLoadTreeData"
+        >
+            <van-cell v-for="item in treeData.list" :key="item">
+                <van-row>
+                    <van-col span="2">
+                        <div style="vertical-align: middle;line-height: 45px">
+                            <img v-if="item.type == 'file'" src="/static/images/icon/file.png" style="height: 35px">
+                            <img v-if="item.type == 'folder'" src="/static/images/icon/folder.png" style="height: 35px">
+                        </div>
+                    </van-col>
+                    <van-col span="20">
+                        <div style="text-align: left;margin-left: 15px" @click="openFunction(item)">
+                            <div style="font-weight: bold">{{item.name}}</div>
+                            <div>
+                                <van-row gutter="20">
+                                    <van-col span="18">
+                                        <div class="label-container">
+                                            {{item.realPath}}
+                                        </div>
+                                    </van-col>
+                                    <van-col span="6" style="font-size: 12px;text-align: right" v-if="item.size > 0">
+                                        {{item.size}} Kb
+                                    </van-col>
+                                </van-row>
+                            </div>
+                        </div>
+                    </van-col>
+                    <van-col span="2">
+                        <div style="line-height: 45px;text-align: center" @click="openFunction(item)">
+                            <van-icon name="ellipsis"/>
+                        </div>
+                    </van-col>
+                </van-row>
+            </van-cell>
+        </van-list>
+    </div>
+
+    <!-- 底部弹窗 -->
+    <van-action-sheet v-model:show="funcDialog.show">
+        <div style="margin: 15px">
+            <van-grid square :column-num="3">
+                <van-grid-item icon="medal-o" text="还原" class="grid-blue"></van-grid-item>
+                <van-grid-item icon="delete-o" text="彻底删除" class="grid-blue"></van-grid-item>
+            </van-grid>
+        </div>
+    </van-action-sheet>
+    <van-floating-bubble icon="wap-home" @click="homepage" style="color: white;background-color: green"/>
+</div>
+<script>
+    Vue.createApp({
+        el: '#app',
+        data() {
+            return {
+                requestHeaders: {},
+                currentStatus: { //记录页面的基础状态
+                    clickItem: null, //当前点击得对象
+                },
+                treeData: {
+                    list: [],
+                    finished: false,
+                    loading: false
+                },
+                funcDialog: {// 功能弹窗
+                    show: false,
+                }
+            }
+        },
+        created() {
+            const that = this
+            setTimeout(() => {
+                that.requestHeaders = commonHeaders()
+            }, 200)
+        },
+        methods: {
+            homepage() {
+                window.location.href = '/m/index'
+            },
+            onLoadTreeData() {
+                const that = this
+                // 异步更新数据
+                // setTimeout 仅做示例，真实场景中一般为 ajax 请求
+                setTimeout(() => {
+                    that.pageDataGet()
+                }, 800);
+            },
+            //打开底部功能区
+            openFunction(obj) {
+                this.currentStatus.clickItem = obj
+                this.funcDialog.show = true
+            },
+            pageDataGet() {
+                const that = this
+                //发请求，获取目录
+                fetch('/api/recovery/allRecoveryFile', {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        // 数据全部加载完成
+                        that.treeData.list = data.data
+                        that.treeData.loading = false;
+                        that.treeData.finished = true;
+                    })
+            },
+        }
+    }).use(vant).mount("#app");
+    const vt4 = vant;
+</script>
+</body>
+</html>
