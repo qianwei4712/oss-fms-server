@@ -21,4 +21,9 @@ public interface NovelFileMapper extends BaseMapper<NovelFile> {
      * 搜索关键词
      */
     List<NovelFile> listBySearchParam(@Param("searchParam") String searchParam);
+
+    /**
+     * 根据路径获取到文件对象
+     */
+    NovelFile getByOssPath(@Param("ossPath") String ossPath);
 }

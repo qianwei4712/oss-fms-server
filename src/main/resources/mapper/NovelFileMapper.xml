@@ -13,4 +13,7 @@
         OR sketch LIKE '%' || #{searchParam} || '%'
         ORDER BY type DESC, name
     </select>
+    <select id="getByOssPath" resultType="cn.shiva.entity.NovelFile">
+        SELECT * FROM novel_file WHERE oss_path = #{ossPath} limit 1
+    </select>
 </mapper>

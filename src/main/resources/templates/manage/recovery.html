@@ -69,7 +69,7 @@
     <van-action-sheet v-model:show="funcDialog.show">
         <div style="margin: 15px">
             <van-grid square :column-num="2">
-                <van-grid-item icon="medal-o" text="还原" class="grid-blue"></van-grid-item>
+                <van-grid-item icon="medal-o" text="还原" class="grid-blue" @click="recoveryFile"></van-grid-item>
                 <van-grid-item icon="delete-o" text="彻底删除" class="grid-blue"
                                @click="completelyDelete"></van-grid-item>
             </van-grid>
@@ -152,7 +152,25 @@
                             that.funcDialog.show = false
                         })
                 }).catch(() => {
-                    });
+                });
+            },
+            //恢复文件
+            recoveryFile() {
+                const that = this
+                fetch('/api/recovery/recoveryFile?recoveryId=' + that.currentStatus.clickItem.id, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data.code === 500) {
+                            vt4.showToast(data.message);
+                            return false;
+                        }
+                        vt4.showToast('文件已还原');
+                        //移除当前行
+                        that.treeData.list.splice(that.treeData.list.indexOf(that.currentStatus.clickItem), 1)
+                        that.funcDialog.show = false
+                    })
             }
         }
     }).use(vant).mount("#app");

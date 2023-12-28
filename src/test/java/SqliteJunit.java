@@ -36,5 +36,10 @@ public class SqliteJunit {
         sqliteService.initFromOss();
     }
 
+    @Test
+    public void competeFolder() {
+        sqliteService.competeFolder("novel/3.这是一个神奇的世界/000 留着偶尔翻一翻/战舰/小塞壬.txt");
+    }
+
 
 }

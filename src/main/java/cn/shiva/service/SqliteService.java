@@ -10,10 +10,13 @@ import com.alibaba.fastjson2.util.DateUtils;
 import com.aliyun.oss.model.ListObjectsV2Result;
 import com.aliyun.oss.model.OSSObjectSummary;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
 
 /**
  * SQLite 基础服务
@@ -66,15 +69,7 @@ public class SqliteService {
         for (OSSObjectSummary objectSummary : listObjectsV2Result.getObjectSummaries()) {
             String key = objectSummary.getKey();
             //组装数据保存数据库
-            NovelFile build = NovelFile.builder()
-                    .name(CommonUtil.getNameFromPath(key))
-                    .size(CommonUtil.calcFileSize(objectSummary.getSize()))
-                    .type("file")
-                    .lastModifyTime(DateUtils.format(objectSummary.getLastModified()))
-                    .ossPath(key)
-                    .filePath("https://" + bucketName + areaSuffix + key)
-                    .parentId(parentId)
-                    .build();
+            NovelFile build = NovelFile.builder().name(CommonUtil.getNameFromPath(key)).size(CommonUtil.calcFileSize(objectSummary.getSize())).type("file").lastModifyTime(DateUtils.format(objectSummary.getLastModified())).ossPath(key).filePath("https://" + bucketName + areaSuffix + key).parentId(parentId).build();
             novelFileMapper.insert(build);
         }
         // 遍历文件夹：
@@ -82,13 +77,7 @@ public class SqliteService {
         // 由于fun/movie/001.avi和fun/movie/007.avi属于fun文件夹下的movie目录，因此这两个文件未在列表中。
         for (String commonPrefix : listObjectsV2Result.getCommonPrefixes()) {
             //组装数据保存数据库
-            NovelFile build = NovelFile.builder()
-                    .name(CommonUtil.getNameFromFolder(commonPrefix))
-                    .type("folder")
-                    .ossPath(commonPrefix)
-                    .filePath("https://" + bucketName + areaSuffix + commonPrefix)
-                    .parentId(parentId)
-                    .build();
+            NovelFile build = NovelFile.builder().name(CommonUtil.getNameFromFolder(commonPrefix)).type("folder").ossPath(commonPrefix).filePath("https://" + bucketName + areaSuffix + commonPrefix).parentId(parentId).build();
             novelFileMapper.insert(build);
             listOss2Db(commonPrefix, build.getId());
         }
@@ -129,6 +118,79 @@ public class SqliteService {
         ossComponent.deleteObject(fileRecovery.getOssPath());
         //最后删除数据库
         recoveryMapper.deleteById(fileRecovery);
+    }
+
+    /**
+     * 文件恢复；
+     * 1.判断恢复位置，是不是存在相同文件；如果存在就返回错误消息
+     * 2.判断文件夹是否存在，如果文件夹也不存在；那就得先加到数据库
+     * 3.准备好了，再开始复制文件；复制文件，然后新增novel数据，删除recovery数据
+     */
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void recoveryFile(Long recoveryId) {
+        FileRecovery fileRecovery = recoveryMapper.selectById(recoveryId);
+        if (fileRecovery == null) {
+            throw new RuntimeException("文件不存在！");
+        }
+        //复制到novel
+        NovelFile novel = new NovelFile();
+        BeanUtils.copyProperties(fileRecovery, novel);
+        novel.setId(null);
+        novel.setOssPath(novel.getOssPath().replace("recovery/", "novel/"));
+        novel.setFilePath(novel.getFilePath().replace("recovery/", "novel/"));
+
+        //第一步：判断OSS上是不是存在相同文件
+        boolean b = ossComponent.doesObjectExist(novel.getOssPath());
+        if (b) {
+            throw new RuntimeException("已存在相同文件！");
+        }
+        //第二步：判断文件夹是不是存在
+        //根据OSS路径，补全路径文件夹
+        Long parentId = competeFolder(novel.getOssPath());
+        novel.setParentId(parentId);
+
+        //第三步：
+        ossComponent.moveObject(fileRecovery.getOssPath(), novel.getOssPath());
+        recoveryMapper.deleteById(fileRecovery);
+        novelFileMapper.insert(novel);
+    }
+
+    /**
+     * 根据路径，已 / 为分隔符，在数据库里补全文件夹；
+     * 文件夹都是 / 结尾，文件都是 txt结尾
+     * novel/3.这是一个神奇的世界/000 留着偶尔翻一翻/战舰/小塞壬.txt
+     */
+    public Long competeFolder(String ossPath) {
+        //先把尾部的文件名去掉
+        if (!ossPath.endsWith("/")) {
+            ossPath = ossPath.substring(0, ossPath.lastIndexOf("/"));
+        }
+
+        Long parentId = 0L;
+        //先根据/进行拆分，然后一层一层拼接，再去数据库里查询
+        String[] split = ossPath.split("/");
+        for (int i = 1; i <= split.length; i++) {
+            //开始拼接，拼接需要按数量，拿到拼接后的数组
+            String joinPath = String.join("/", Arrays.copyOfRange(split, 0, i)) + "/";
+            String currentName = split[i - 1];
+            NovelFile novelFile = novelFileMapper.getByOssPath(joinPath);
+            //如果目录已经存在，搞成上级目录
+            if (novelFile != null) {
+                parentId = novelFile.getId();
+                continue;
+            }
+            //如果不存在，那就得 新增了
+            novelFile = new NovelFile();
+            novelFile.setName(currentName);
+            novelFile.setParentId(parentId);
+            novelFile.setType("folder");
+            novelFile.setOssPath(joinPath);
+            novelFile.setFilePath("https://" + bucketName + areaSuffix + novelFile.getOssPath());
+            novelFileMapper.insert(novelFile);
+            //最后设置上级id
+            parentId = novelFile.getId();
+        }
+        return parentId;
     }
 
 }

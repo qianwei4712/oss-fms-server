@@ -44,7 +44,18 @@ public class RecoveryController {
     }
 
 
-    //TODO 恢复文件
+    /**
+     * 恢复文件;
+     */
+    @GetMapping("recoveryFile")
+    public R<String> recoveryFile(Long recoveryId) {
+        try {
+            sqliteService.recoveryFile(recoveryId);
+            return R.ok();
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
+    }
 
     /**
      * 彻底删除文件
