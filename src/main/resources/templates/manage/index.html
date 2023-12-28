@@ -237,17 +237,23 @@
             //下载
             deleteNovel() {
                 const that = this
-                //发请求，获取目录
-                fetch('/api/novel/delete?novelId=' + that.currentStatus.clickItem.id, {
-                    method: 'GET',
-                    headers: that.requestHeaders,
-                }).then(response => response.json())
-                    .then(data => {
-                        vt4.showToast('删除成功！');
-                        //移除当前行
-                        that.treeData.list.splice(that.treeData.list.indexOf(that.currentStatus.clickItem), 1)
-                        that.funcDialog.show = false
-                    })
+                vt4.showConfirmDialog({
+                    title: '确认删除？',
+                    message: '删除后文件会先进入回收站',
+                }).then(() => {
+                    //发请求，获取目录
+                    fetch('/api/novel/delete?novelId=' + that.currentStatus.clickItem.id, {
+                        method: 'GET',
+                        headers: that.requestHeaders,
+                    }).then(response => response.json())
+                        .then(data => {
+                            vt4.showToast('删除成功！');
+                            //移除当前行
+                            that.treeData.list.splice(that.treeData.list.indexOf(that.currentStatus.clickItem), 1)
+                            that.funcDialog.show = false
+                        })
+                }).catch(() => {
+                });
             }
         }
     }).use(vant).mount("#app");

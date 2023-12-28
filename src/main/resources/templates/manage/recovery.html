@@ -70,7 +70,8 @@
         <div style="margin: 15px">
             <van-grid square :column-num="2">
                 <van-grid-item icon="medal-o" text="还原" class="grid-blue"></van-grid-item>
-                <van-grid-item icon="delete-o" text="彻底删除" class="grid-blue"></van-grid-item>
+                <van-grid-item icon="delete-o" text="彻底删除" class="grid-blue"
+                               @click="completelyDelete"></van-grid-item>
             </van-grid>
         </div>
     </van-action-sheet>
@@ -132,6 +133,27 @@
                         that.treeData.finished = true;
                     })
             },
+            //彻底删除文件
+            completelyDelete() {
+                const that = this
+                vt4.showConfirmDialog({
+                    title: '警告！警告！',
+                    message: '删除后文件无法恢复！！！',
+                }).then(() => {
+                    //发请求，获取目录
+                    fetch('/api/recovery/completelyDelete?recoveryId=' + that.currentStatus.clickItem.id, {
+                        method: 'GET',
+                        headers: that.requestHeaders,
+                    }).then(response => response.json())
+                        .then(data => {
+                            vt4.showToast('删除成功');
+                            //移除当前行
+                            that.treeData.list.splice(that.treeData.list.indexOf(that.currentStatus.clickItem), 1)
+                            that.funcDialog.show = false
+                        })
+                }).catch(() => {
+                    });
+            }
         }
     }).use(vant).mount("#app");
     const vt4 = vant;

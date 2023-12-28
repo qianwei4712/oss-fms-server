@@ -1,6 +1,8 @@
 package cn.shiva.service;
 
+import cn.shiva.entity.FileRecovery;
 import cn.shiva.entity.NovelFile;
+import cn.shiva.mapper.FileRecoveryMapper;
 import cn.shiva.mapper.NovelFileMapper;
 import cn.shiva.mapper.SqliteMapper;
 import cn.shiva.utils.CommonUtil;
@@ -11,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * SQLite 基础服务
@@ -34,6 +37,8 @@ public class SqliteService {
     private NovelFileMapper novelFileMapper;
     @Autowired
     private NovelService novelService;
+    @Autowired
+    private FileRecoveryMapper recoveryMapper;
 
     /**
      * 初始化OSS对应的文件树
@@ -110,4 +115,20 @@ public class SqliteService {
         }
 
     }
+
+    /**
+     * 彻底删除回收站文件
+     * 先删除OSS文件，再删除数据库
+     */
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void completelyDeleteFile(Long recoveryId) {
+        FileRecovery fileRecovery = recoveryMapper.selectById(recoveryId);
+        if (fileRecovery == null) {
+            return;
+        }
+        ossComponent.deleteObject(fileRecovery.getOssPath());
+        //最后删除数据库
+        recoveryMapper.deleteById(fileRecovery);
+    }
+
 }

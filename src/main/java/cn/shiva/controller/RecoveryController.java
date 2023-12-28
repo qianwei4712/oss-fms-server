@@ -3,6 +3,7 @@ package cn.shiva.controller;
 import cn.shiva.core.domain.R;
 import cn.shiva.entity.FileRecovery;
 import cn.shiva.mapper.FileRecoveryMapper;
+import cn.shiva.service.SqliteService;
 import cn.shiva.utils.ThreadPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,8 @@ public class RecoveryController {
     private ThreadPool pool;
     @Autowired
     private FileRecoveryMapper recoveryMapper;
+    @Autowired
+    private SqliteService sqliteService;
 
     @GetMapping("allRecoveryFile")
     public R<List<FileRecovery>> allRecoveryFile() throws InterruptedException {
@@ -42,6 +45,14 @@ public class RecoveryController {
 
 
     //TODO 恢复文件
-    //TODO 彻底删除文件，批量
+
+    /**
+     * 彻底删除文件
+     */
+    @GetMapping("completelyDelete")
+    public R<String> completelyDelete(Long recoveryId) {
+        sqliteService.completelyDeleteFile(recoveryId);
+        return R.ok();
+    }
 
 }
