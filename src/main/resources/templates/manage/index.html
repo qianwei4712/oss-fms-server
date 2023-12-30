@@ -6,7 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="author" content="shiva"/>
     <meta name="renderer" content="webkit"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <link rel="stylesheet" type="text/css" th:href="@{/fms.css}" media="all">
@@ -22,14 +23,16 @@
 <body>
 <div id="app">
     <input ref="token" name="token" th:value="${token}" type="hidden"/>
-    <van-search
-            v-model="searchStr"
-            placeholder="请输入搜索关键词"
-            @search="onSearch"
-            action-text="返回"
-            show-action
-            @cancel="back"
-    ></van-search>
+    <div style="position: fixed;top: 0; width: 100%;z-index: 999;">
+        <van-search
+                v-model="searchStr"
+                placeholder="请输入搜索关键词"
+                @search="onSearch"
+                action-text="返回"
+                show-action
+                @cancel="back"
+        ></van-search>
+    </div>
     <div>
         <!-- 文件树的区域 -->
         <van-list
@@ -80,15 +83,34 @@
     <van-action-sheet v-model:show="funcDialog.show">
         <div style="margin: 15px">
             <van-grid square :column-num="3">
-                <van-grid-item icon="medal-o" text="下载" @click="download" v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
+                <van-grid-item icon="medal-o" text="下载" @click="download"
+                               v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="comment-o" text="打标签"></van-grid-item>
                 <van-grid-item icon="setting-o" text="描述"></van-grid-item>
                 <van-grid-item icon="aim" text="重命名"></van-grid-item>
-                <van-grid-item icon="exchange" text="移动"></van-grid-item>
+                <van-grid-item icon="exchange" text="移动" @click="openMoveDialog" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="delete-o" text="删除" @click="deleteNovel" class="grid-blue"></van-grid-item>
             </van-grid>
         </div>
     </van-action-sheet>
+
+    <van-dialog v-model:show="moveFileDialog.show" title="选择移动文件夹"
+                @confirm="actualMove"
+                show-cancel-button>
+        <div>
+            <van-cell>
+                <div style="text-align: left;margin-left: 15px" @click="nextFolder(moveFileDialog.rootObj)">
+                    <div style="font-weight: bold">......</div>
+                </div>
+            </van-cell>
+            <van-cell v-for="item in moveFileDialog.list" :key="item">
+                <div style="text-align: left;margin-left: 15px" @click="nextFolder(item)">
+                    <div style="font-weight: bold">{{item.name}}</div>
+                </div>
+            </van-cell>
+        </div>
+    </van-dialog>
+
     <van-floating-bubble icon="cluster" @click="morePage"></van-floating-bubble>
 </div>
 <script>
@@ -101,6 +123,14 @@
                 searchStr: '', //搜索框输入内容
                 uploadNovelDialog: { //上传小说
                     open: false,
+                },
+                moveFileDialog: {
+                    show: false,
+                    list: [],//文件夹列表
+                    pinkedFolderId: 0,//当前选中的文件夹ID
+                    rootObj: {
+                        id: 0
+                    }
                 },
                 currentStatus: { //记录页面的基础状态
                     pageId: 0, //当前文件夹的ID，根目录为0；其他二级菜单都有上级目录
@@ -254,6 +284,32 @@
                         })
                 }).catch(() => {
                 });
+            },
+            //打开移动文件的窗口
+            openMoveDialog() {
+                this.moveFileDialog.pinkedFolderId = 0
+                this.listFolderByParentId(this.moveFileDialog.pinkedFolderId)
+                this.moveFileDialog.show = true
+            },
+            //点击文件夹，进入下一个文件夹
+            nextFolder(obj) {
+                this.moveFileDialog.pinkedFolderId = obj.id
+                this.listFolderByParentId(this.moveFileDialog.pinkedFolderId)
+            },
+            //根据上级id拿到文件夹列表
+            listFolderByParentId(parentId) {
+                const that = this
+                fetch('/api/novel/listFolder?parentId=' + parentId, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        that.moveFileDialog.list = data.data
+                    })
+            },
+            //实际进行文件移动操作
+            actualMove() {
+                console.log(this.moveFileDialog.pinkedFolderId)
             }
         }
     }).use(vant).mount("#app");

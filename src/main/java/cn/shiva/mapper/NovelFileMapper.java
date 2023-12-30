@@ -26,4 +26,9 @@ public interface NovelFileMapper extends BaseMapper<NovelFile> {
      * 根据路径获取到文件对象
      */
     NovelFile getByOssPath(@Param("ossPath") String ossPath);
+
+    /**
+     * 根据上级id，拿到文件夹列表
+     */
+    List<NovelFile> listFolderParentId(@Param("parentId") Long parentId);
 }

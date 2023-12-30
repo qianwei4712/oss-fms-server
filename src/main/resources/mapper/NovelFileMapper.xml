@@ -16,4 +16,7 @@
     <select id="getByOssPath" resultType="cn.shiva.entity.NovelFile">
         SELECT * FROM novel_file WHERE oss_path = #{ossPath} limit 1
     </select>
+    <select id="listFolderParentId" resultType="cn.shiva.entity.NovelFile">
+        SELECT * FROM novel_file WHERE parent_id = #{parentId} and type = 'folder' ORDER BY type desc, name
+    </select>
 </mapper>

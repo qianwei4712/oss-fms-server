@@ -6,6 +6,10 @@ body {
     height: 100%;
 }
 
+body::-webkit-scrollbar {
+    display: none;
+}
+
 .pwd-init-input {
     margin-top: 30px;
     height: 40px;

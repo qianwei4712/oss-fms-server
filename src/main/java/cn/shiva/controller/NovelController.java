@@ -129,6 +129,12 @@ public class NovelController {
         return R.ok();
     }
 
+    @GetMapping("listFolder")
+    public R<List<NovelFile>> listFolder(Long parentId) {
+        List<NovelFile> list = novelFileMapper.listFolderParentId(parentId);
+        return R.ok(list);
+    }
+
     //TODO 重命名文件
 
     //TODO 移动文件到新的路径
