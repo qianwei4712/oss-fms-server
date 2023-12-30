@@ -33,7 +33,7 @@
                 @cancel="back"
         ></van-search>
     </div>
-    <div>
+    <div style="margin-top: 50px">
         <!-- 文件树的区域 -->
         <van-list
                 v-model:loading="treeData.loading"
@@ -309,7 +309,29 @@
             },
             //实际进行文件移动操作
             actualMove() {
-                console.log(this.moveFileDialog.pinkedFolderId)
+                const that = this
+                vt4.showConfirmDialog({
+                    title: '确认移动',
+                    message: '移动到新文件夹，当前路径会被移除',
+                }).then(() => {
+                    //发请求，获取目录
+                    fetch('/api/novel/actualMove?folderId=' + that.moveFileDialog.pinkedFolderId + '&novelId=' + that.currentStatus.clickItem.id, {
+                        method: 'GET',
+                        headers: that.requestHeaders,
+                    }).then(response => response.json())
+                        .then(data => {
+                            if (data.code === 200) {
+                                vt4.showToast('移动成功！');
+                                //移除当前行
+                                that.treeData.list.splice(that.treeData.list.indexOf(that.currentStatus.clickItem), 1)
+                                that.funcDialog.show = false
+                            } else {
+                                vt4.showToast(data.message);
+                            }
+
+                        })
+                }).catch(() => {
+                });
             }
         }
     }).use(vant).mount("#app");

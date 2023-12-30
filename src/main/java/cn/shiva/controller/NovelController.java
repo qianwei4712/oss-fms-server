@@ -129,17 +129,28 @@ public class NovelController {
         return R.ok();
     }
 
+    /**
+     * 根据上级文件夹id,拿到下级列表
+     */
     @GetMapping("listFolder")
     public R<List<NovelFile>> listFolder(Long parentId) {
         List<NovelFile> list = novelFileMapper.listFolderParentId(parentId);
         return R.ok(list);
     }
 
+    /**
+     * 实际移动文件夹
+     */
+    @GetMapping("actualMove")
+    public R<String> actualMove(Long folderId, Long novelId) {
+        return novelService.actualMove(folderId, novelId);
+    }
+
+
     //TODO 重命名文件
 
     //TODO 移动文件到新的路径
 
-    //TODO 移动整个文件夹到新路径
 
     //TODO 更新简述，其他信息不允许更新
 

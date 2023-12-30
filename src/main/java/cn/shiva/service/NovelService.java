@@ -1,5 +1,6 @@
 package cn.shiva.service;
 
+import cn.shiva.core.domain.R;
 import cn.shiva.entity.FileRecovery;
 import cn.shiva.entity.NovelFile;
 import cn.shiva.mapper.FileRecoveryMapper;
@@ -8,6 +9,7 @@ import cn.shiva.mapper.NovelLabelMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class NovelService {
+    @Value("${aliOss.bucketName}")
+    private String bucketName;
+    @Value("${aliOss.areaSuffix}")
+    private String areaSuffix;
 
     @Autowired
     private NovelFileMapper novelFileMapper;
@@ -49,4 +55,38 @@ public class NovelService {
         ossComponent.moveObject(novel.getOssPath(), recovery.getOssPath());
     }
 
+    /**
+     * 将文件移动到新文件夹
+     *
+     * @param folderId 新文件夹id
+     * @param novelId  文件id
+     */
+    @Transactional(readOnly = false)
+    public R<String> actualMove(Long folderId, Long novelId) {
+        boolean rootFlag = false;
+        if (0 == folderId) {
+            rootFlag = true;
+            NovelFile byOssPath = novelFileMapper.getByOssPath("novel/");
+            folderId = byOssPath.getId();
+        }
+        //拿到文件和文件夹
+        NovelFile novelFile = novelFileMapper.selectById(novelId);
+        NovelFile newFolder = novelFileMapper.selectById(folderId);
+        String oldPath = novelFile.getOssPath();
+        //整理好新的数据
+        //如果是根目录，直接设置0
+        novelFile.setParentId(rootFlag ? 0 : folderId);
+        novelFile.setOssPath(newFolder.getOssPath() + novelFile.getName());
+        novelFile.setFilePath("https://" + bucketName + areaSuffix + novelFile.getOssPath());
+        //先移动，得判断下是不是存在文件
+        boolean exist = ossComponent.doesObjectExist(novelFile.getOssPath());
+        if (exist) {
+            //存在直接结束
+            return R.fail("目标路径已存在文件");
+        }
+        ossComponent.moveObject(oldPath, novelFile.getOssPath());
+
+        novelFileMapper.updateById(novelFile);
+        return R.ok("移动成功");
+    }
 }
