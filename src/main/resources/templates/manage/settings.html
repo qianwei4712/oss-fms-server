@@ -33,7 +33,8 @@
                        @click="router('/m/page?type=recovery')"></van-grid-item>
         <van-grid-item icon="umbrella-circle" text="OSS数据初始化" class="grid-green"
                        @click="ossInitConfirm"></van-grid-item>
-        <van-grid-item icon="gem" text="OSS差量导入"></van-grid-item>
+        <van-grid-item icon="gem" text="OSS差量导入" class="grid-green"
+                       @click="differentialImport.show = true"></van-grid-item>
         <van-grid-item icon="weapp-nav" text="OSS配置"></van-grid-item>
         <van-grid-item icon="descending" text="数据导出"></van-grid-item>
         <van-grid-item icon="ascending" text="数据导入"></van-grid-item>
@@ -43,6 +44,14 @@
         <van-grid-item icon="sort" text="退出登录" class="grid-green" @click="logout"></van-grid-item>
     </van-grid>
 
+    <van-dialog v-model:show="differentialImport.show" title="导入子文件夹"
+                @confirm="differentialImportStart()"
+                @open="differentialImport.path = ''"
+                show-cancel-button>
+        <input v-model="differentialImport.path" placeholder="请输入新路径" class="pwd-init-input" style="margin: 30px 30px 10px 30px;width: 80%"/>
+        <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">例如：novel/新文件夹/子文件夹/</div>
+    </van-dialog>
+
     <van-floating-bubble icon="wap-home" @click="homepage" style="color: white;background-color: green"/>
 </div>
 <script>
@@ -51,6 +60,10 @@
         data() {
             return {
                 requestHeaders: {},
+                differentialImport: {
+                    show: false,
+                    path: '', //新导入的路径
+                }
             }
         },
         created() {
@@ -73,6 +86,7 @@
             },
             //确认重置数据，从OSS拉到本地
             ossInitConfirm() {
+                const that = this
                 vt4.showConfirmDialog({
                     title: '',
                     message: '从OSS初始化数据到本地，会清空本地文件数据和标签关系！！请谨慎操作。',
@@ -81,8 +95,6 @@
                         title: '',
                         message: '再确认一次，数据会清空！！！',
                     }).then(() => {
-
-                        const that = this
                         //发请求，获取目录
                         fetch('/api/novel/initFromOss', {
                             method: 'GET',
@@ -95,6 +107,18 @@
                     })
                 }).catch(() => {
                 })
+            },
+            //差量导入调用后台
+            differentialImportStart() {
+                const that = this
+                //发请求，获取目录
+                fetch('/api/novel/differentialImport?path=' + that.differentialImport.path, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        vt4.showNotify({type: 'success', message: '导入成功！'});
+                    })
             }
         }
     }).use(vant).mount("#app");

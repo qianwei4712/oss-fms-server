@@ -120,8 +120,14 @@ public class NovelController {
         return R.ok();
     }
 
-
-    //TODO 上传单个小说：可以填写简述
+    /**
+     * 差量导入，按新路径进行导入
+     */
+    @GetMapping("differentialImport")
+    public R<String> differentialImport(String path) {
+        sqliteService.differentialImport(path);
+        return R.ok();
+    }
 
     //TODO 重命名文件
 

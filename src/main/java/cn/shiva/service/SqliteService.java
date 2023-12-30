@@ -193,4 +193,41 @@ public class SqliteService {
         return parentId;
     }
 
+    /**
+     * 通过路径，导入新的文件夹
+     */
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void differentialImport(String path) {
+        boolean b = path.startsWith("novel/");
+        if (!b) {
+            path = "novel/" + path;
+        }
+        //先要拿到路径的上级的ID，
+        //一直查到同级目录不存在，再开始遍历
+        Long parentId = 0L;
+        String[] split = path.split("/");
+        for (int i = 1; i <= split.length; i++) {
+            //开始拼接，拼接需要按数量，拿到拼接后的数组
+            String joinPath = String.join("/", Arrays.copyOfRange(split, 0, i)) + "/";
+            String currentName = split[i - 1];
+            NovelFile novelFile = novelFileMapper.getByOssPath(joinPath);
+            //如果目录已经存在，搞成上级目录
+            if (novelFile != null) {
+                parentId = novelFile.getId();
+                continue;
+            }
+            //先要把当前这个文件夹保存进去
+            novelFile = new NovelFile();
+            novelFile.setName(currentName);
+            novelFile.setParentId(parentId);
+            novelFile.setType("folder");
+            novelFile.setOssPath(joinPath);
+            novelFile.setFilePath("https://" + bucketName + areaSuffix + novelFile.getOssPath());
+            novelFileMapper.insert(novelFile);
+            parentId = novelFile.getId();
+            //查询到不存在的
+            listOss2Db(joinPath, parentId);
+            break;
+        }
+    }
 }

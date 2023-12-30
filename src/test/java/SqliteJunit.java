@@ -42,4 +42,8 @@ public class SqliteJunit {
     }
 
 
+    @Test
+    public void differentialImport() {
+        sqliteService.differentialImport("novel/7.非常不错/新建文件夹/子文件夹/");
+    }
 }
