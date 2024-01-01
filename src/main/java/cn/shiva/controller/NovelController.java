@@ -147,7 +147,13 @@ public class NovelController {
     }
 
 
-    //TODO 重命名文件
+    /**
+     * 重命名文件
+     */
+    @GetMapping("renameFile")
+    public R<String> renameFile(Long novelId, String fileName) {
+        return novelService.renameFile(novelId, fileName);
+    }
 
     //TODO 移动文件到新的路径
 

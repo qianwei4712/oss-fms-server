@@ -7,6 +7,7 @@ import cn.shiva.mapper.FileRecoveryMapper;
 import cn.shiva.mapper.NovelFileMapper;
 import cn.shiva.mapper.NovelLabelMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,5 +89,33 @@ public class NovelService {
 
         novelFileMapper.updateById(novelFile);
         return R.ok("移动成功");
+    }
+
+    /**
+     * 重命名文件
+     * 1.先把数据补全，全部正确为主
+     * 2.判断文件名字是否重复
+     */
+    public R<String> renameFile(Long novelId, String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return R.fail("文件名不正确!");
+        }
+        if (!fileName.endsWith(".txt")) {
+            fileName = fileName + ".txt";
+        }
+        //先判断文件名重复
+        NovelFile novelFile = novelFileMapper.selectById(novelId);
+        String oldOssPath = novelFile.getOssPath();
+        String newOssPath = oldOssPath.substring(novelFile.getOssPath().lastIndexOf("/")) + fileName;
+        if (ossComponent.doesObjectExist(newOssPath)) {
+            return R.fail("目标路径已存在文件");
+        }
+        //拼接新的
+        novelFile.setOssPath(newOssPath);
+        novelFile.setFilePath("https://" + bucketName + areaSuffix + novelFile.getOssPath());
+        // 实际重命名
+        ossComponent.moveObject(oldOssPath, newOssPath);
+        novelFileMapper.updateById(novelFile);
+        return R.ok("重命名成功");
     }
 }

@@ -87,8 +87,9 @@
                                v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="comment-o" text="打标签"></van-grid-item>
                 <van-grid-item icon="setting-o" text="描述"></van-grid-item>
-                <van-grid-item icon="aim" text="重命名"></van-grid-item>
-                <van-grid-item icon="exchange" text="移动" @click="openMoveDialog" class="grid-blue"></van-grid-item>
+                <van-grid-item icon="aim" text="重命名" v-if="currentStatus.clickItem.type === 'file'"></van-grid-item>
+                <van-grid-item icon="exchange" text="移动" v-if="currentStatus.clickItem.type === 'file'"
+                               @click="openMoveDialog" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="delete-o" text="删除" @click="deleteNovel" class="grid-blue"></van-grid-item>
             </van-grid>
         </div>
@@ -108,6 +109,16 @@
                     <div style="font-weight: bold">{{item.name}}</div>
                 </div>
             </van-cell>
+        </div>
+    </van-dialog>
+
+    <van-dialog v-model:show="renameFile.show" title="重命名文件"
+                @confirm="actualRename()"
+                show-cancel-button>
+        <input v-model="renameFile.path" placeholder="请输入新文件名" class="pwd-init-input"
+               style="margin: 30px 30px 10px 30px;width: 80%"/>
+        <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">
+            .txt 后缀自动拼接
         </div>
     </van-dialog>
 
@@ -260,8 +271,15 @@
                         const downloadLink = document.createElement('a');
                         downloadLink.href = url;
                         downloadLink.download = data.data.name;
-
-                        downloadLink.click();
+                        // downloadLink.click();
+                        // 模拟点击事件
+                        const clickEvent = new MouseEvent('click', {
+                            view: window,
+                            bubbles: true,
+                            cancelable: true
+                        });
+                        downloadLink.dispatchEvent(clickEvent);
+                        vt4.showToast('下载成功！');
                     })
             },
             //下载
@@ -332,6 +350,10 @@
                         })
                 }).catch(() => {
                 });
+            },
+            //开始准备文件重命名流程
+            startRename(obj) {
+
             }
         }
     }).use(vant).mount("#app");
