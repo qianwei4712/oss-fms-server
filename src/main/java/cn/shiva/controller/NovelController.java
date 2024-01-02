@@ -155,9 +155,6 @@ public class NovelController {
         return novelService.renameFile(novelId, fileName);
     }
 
-    //TODO 移动文件到新的路径
-
-
     //TODO 更新简述，其他信息不允许更新
 
 }

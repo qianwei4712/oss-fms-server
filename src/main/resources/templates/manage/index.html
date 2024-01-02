@@ -87,7 +87,8 @@
                                v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="comment-o" text="打标签"></van-grid-item>
                 <van-grid-item icon="setting-o" text="描述"></van-grid-item>
-                <van-grid-item icon="aim" text="重命名" v-if="currentStatus.clickItem.type === 'file'"></van-grid-item>
+                <van-grid-item icon="aim" text="重命名" v-if="currentStatus.clickItem.type === 'file'"
+                               @click="openRenameDialog(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="exchange" text="移动" v-if="currentStatus.clickItem.type === 'file'"
                                @click="openMoveDialog" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="delete-o" text="删除" @click="deleteNovel" class="grid-blue"></van-grid-item>
@@ -115,7 +116,7 @@
     <van-dialog v-model:show="renameFile.show" title="重命名文件"
                 @confirm="actualRename()"
                 show-cancel-button>
-        <input v-model="renameFile.path" placeholder="请输入新文件名" class="pwd-init-input"
+        <input v-model="renameFile.value" placeholder="请输入新文件名" class="pwd-init-input"
                style="margin: 30px 30px 10px 30px;width: 80%"/>
         <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">
             .txt 后缀自动拼接
@@ -156,6 +157,10 @@
                 },
                 funcDialog: {// 功能弹窗
                     show: false,
+                },
+                renameFile: {//重命名弹窗
+                    show: false,
+                    value: ''
                 }
             }
         },
@@ -351,9 +356,31 @@
                 }).catch(() => {
                 });
             },
+            //打开重命名弹窗
+            openRenameDialog(obj) {
+                if (obj == null) {
+                    return false;
+                }
+                this.renameFile.value = obj.name.replace(".txt", "")
+                this.renameFile.show = true
+            },
             //开始准备文件重命名流程
-            startRename(obj) {
-
+            actualRename() {
+                const that = this
+                fetch('/api/novel/renameFile?fileName=' + that.renameFile.value + '&novelId=' + that.currentStatus.clickItem.id, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data.code === 200) {
+                            vt4.showToast('重命名成功！');
+                            //移除当前行
+                            that.treeData.list[that.treeData.list.indexOf(that.currentStatus.clickItem)].name = that.renameFile.value + ".txt"
+                            that.funcDialog.show = false
+                        } else {
+                            vt4.showToast(data.message);
+                        }
+                    })
             }
         }
     }).use(vant).mount("#app");

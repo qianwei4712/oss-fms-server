@@ -106,11 +106,12 @@ public class NovelService {
         //先判断文件名重复
         NovelFile novelFile = novelFileMapper.selectById(novelId);
         String oldOssPath = novelFile.getOssPath();
-        String newOssPath = oldOssPath.substring(novelFile.getOssPath().lastIndexOf("/")) + fileName;
+        String newOssPath = oldOssPath.substring(0, novelFile.getOssPath().lastIndexOf("/") + 1) + fileName;
         if (ossComponent.doesObjectExist(newOssPath)) {
             return R.fail("目标路径已存在文件");
         }
         //拼接新的
+        novelFile.setName(fileName);
         novelFile.setOssPath(newOssPath);
         novelFile.setFilePath("https://" + bucketName + areaSuffix + novelFile.getOssPath());
         // 实际重命名
