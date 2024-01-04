@@ -1,12 +1,14 @@
 package cn.shiva.service;
 
 import cn.shiva.entity.NovelFile;
+import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.util.DateUtils;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,15 +26,13 @@ import java.util.Date;
 @Component
 public class AliOssComponent {
 
-    @Value("${aliOss.endpoint}")
+    @Autowired
+    private ConfigService configService;
+
     private String endpoint;
-    @Value("${aliOss.accessKeyId}")
     private String accessKeyId;
-    @Value("${aliOss.accessKeySecret}")
     private String accessKeySecret;
-    @Value("${aliOss.bucketName}")
     private String bucketName;
-    @Value("${aliOss.areaSuffix}")
     private String areaSuffix;
 
     private OSS ossClient;
@@ -211,6 +211,8 @@ public class AliOssComponent {
     private void initClient() {
         //初始化连接器
         if (ossClient == null) {
+            // 从数据库拿到对应的数据
+            initParams();
             // 初始化创建连接
             ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         }
@@ -220,6 +222,39 @@ public class AliOssComponent {
             //设置空间为公共读
             ossClient.setBucketAcl(bucketName, CannedAccessControlList.PublicRead);
         }
+    }
+
+    /**
+     * 在更新了OSS配置之后，需要重新获取OSS链接
+     */
+    public void cleanClient() {
+        ossClient = null;
+    }
+
+    /**
+     * 从数据库中，拿到全部的参数；然后筛选出自己需要的
+     */
+    private void initParams() {
+        JSONObject jsonObject = configService.getAllParamsByJson();
+        endpoint = jsonObject.getString("endpoint");
+        accessKeyId = jsonObject.getString("accessKeyId");
+        accessKeySecret = jsonObject.getString("accessKeySecret");
+        bucketName = jsonObject.getString("bucketName");
+        areaSuffix = jsonObject.getString("areaSuffix");
+    }
+
+    public String getBucketName() {
+        if (StringUtils.isBlank(bucketName)) {
+            bucketName = configService.key("bucketName");
+        }
+        return bucketName;
+    }
+
+    public String getAreaSuffix() {
+        if (StringUtils.isBlank(areaSuffix)) {
+            areaSuffix = configService.key("areaSuffix");
+        }
+        return areaSuffix;
     }
 
     private String getFileSuffix(MultipartFile file) {

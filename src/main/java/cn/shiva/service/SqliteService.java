@@ -12,7 +12,6 @@ import com.aliyun.oss.model.OSSObjectSummary;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +25,6 @@ import java.util.Arrays;
 @Slf4j
 @Service
 public class SqliteService {
-
-    @Value("${aliOss.bucketName}")
-    private String bucketName;
-    @Value("${aliOss.areaSuffix}")
-    private String areaSuffix;
 
     @Autowired
     private SqliteMapper sqliteMapper;
@@ -69,7 +63,14 @@ public class SqliteService {
         for (OSSObjectSummary objectSummary : listObjectsV2Result.getObjectSummaries()) {
             String key = objectSummary.getKey();
             //组装数据保存数据库
-            NovelFile build = NovelFile.builder().name(CommonUtil.getNameFromPath(key)).size(CommonUtil.calcFileSize(objectSummary.getSize())).type("file").lastModifyTime(DateUtils.format(objectSummary.getLastModified())).ossPath(key).filePath("https://" + bucketName + areaSuffix + key).parentId(parentId).build();
+            NovelFile build = NovelFile.builder()
+                    .name(CommonUtil.getNameFromPath(key))
+                    .size(CommonUtil.calcFileSize(objectSummary.getSize()))
+                    .type("file")
+                    .lastModifyTime(DateUtils.format(objectSummary.getLastModified()))
+                    .ossPath(key).filePath("https://" + ossComponent.getBucketName() + ossComponent.getAreaSuffix() + key)
+                    .parentId(parentId)
+                    .build();
             novelFileMapper.insert(build);
         }
         // 遍历文件夹：
@@ -77,7 +78,13 @@ public class SqliteService {
         // 由于fun/movie/001.avi和fun/movie/007.avi属于fun文件夹下的movie目录，因此这两个文件未在列表中。
         for (String commonPrefix : listObjectsV2Result.getCommonPrefixes()) {
             //组装数据保存数据库
-            NovelFile build = NovelFile.builder().name(CommonUtil.getNameFromFolder(commonPrefix)).type("folder").ossPath(commonPrefix).filePath("https://" + bucketName + areaSuffix + commonPrefix).parentId(parentId).build();
+            NovelFile build = NovelFile.builder()
+                    .name(
+                            CommonUtil.getNameFromFolder(commonPrefix))
+                    .type("folder").ossPath(commonPrefix).filePath("https://" + ossComponent.getBucketName() + ossComponent.getAreaSuffix() + commonPrefix
+                    )
+                    .parentId(parentId)
+                    .build();
             novelFileMapper.insert(build);
             listOss2Db(commonPrefix, build.getId());
         }
@@ -185,7 +192,7 @@ public class SqliteService {
             novelFile.setParentId(parentId);
             novelFile.setType("folder");
             novelFile.setOssPath(joinPath);
-            novelFile.setFilePath("https://" + bucketName + areaSuffix + novelFile.getOssPath());
+            novelFile.setFilePath("https://" + ossComponent.getBucketName() + ossComponent.getAreaSuffix() + novelFile.getOssPath());
             novelFileMapper.insert(novelFile);
             //最后设置上级id
             parentId = novelFile.getId();
@@ -222,7 +229,7 @@ public class SqliteService {
             novelFile.setParentId(parentId);
             novelFile.setType("folder");
             novelFile.setOssPath(joinPath);
-            novelFile.setFilePath("https://" + bucketName + areaSuffix + novelFile.getOssPath());
+            novelFile.setFilePath("https://" + ossComponent.getBucketName() + ossComponent.getAreaSuffix() + novelFile.getOssPath());
             novelFileMapper.insert(novelFile);
             parentId = novelFile.getId();
             //查询到不存在的

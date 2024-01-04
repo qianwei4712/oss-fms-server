@@ -3,9 +3,13 @@ package cn.shiva.service;
 import cn.shiva.entity.Config;
 import cn.shiva.mapper.ConfigMapper;
 import cn.shiva.utils.CacheUtil;
+import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 配置数据相关服务
@@ -62,4 +66,19 @@ public class ConfigService {
 
     }
 
+    /**
+     * 从数据库拿到全部的参数，并搞成json
+     */
+    public JSONObject getAllParamsByJson() {
+        JSONObject jsonObject = JSONObject.of();
+        List<Config> configs = configMapper.selectList(new QueryWrapper<>());
+        for (Config config : configs) {
+            jsonObject.put(config.getConfigKey(), config.getConfigValue());
+        }
+        return jsonObject;
+    }
+
+    public String key(String key) {
+        return configMapper.key(key);
+    }
 }

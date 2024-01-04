@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class NovelService {
-    @Value("${aliOss.bucketName}")
-    private String bucketName;
-    @Value("${aliOss.areaSuffix}")
-    private String areaSuffix;
 
     @Autowired
     private NovelFileMapper novelFileMapper;
@@ -78,7 +73,7 @@ public class NovelService {
         //如果是根目录，直接设置0
         novelFile.setParentId(rootFlag ? 0 : folderId);
         novelFile.setOssPath(newFolder.getOssPath() + novelFile.getName());
-        novelFile.setFilePath("https://" + bucketName + areaSuffix + novelFile.getOssPath());
+        novelFile.setFilePath("https://" + ossComponent.getBucketName() + ossComponent.getAreaSuffix() + novelFile.getOssPath());
         //先移动，得判断下是不是存在文件
         boolean exist = ossComponent.doesObjectExist(novelFile.getOssPath());
         if (exist) {
@@ -113,7 +108,7 @@ public class NovelService {
         //拼接新的
         novelFile.setName(fileName);
         novelFile.setOssPath(newOssPath);
-        novelFile.setFilePath("https://" + bucketName + areaSuffix + novelFile.getOssPath());
+        novelFile.setFilePath("https://" + ossComponent.getBucketName() + ossComponent.getAreaSuffix() + novelFile.getOssPath());
         // 实际重命名
         ossComponent.moveObject(oldOssPath, newOssPath);
         novelFileMapper.updateById(novelFile);
