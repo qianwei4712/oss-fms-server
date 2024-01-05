@@ -35,7 +35,8 @@
                        @click="ossInitConfirm"></van-grid-item>
         <van-grid-item icon="gem" text="OSS差量导入" class="grid-green"
                        @click="differentialImport.show = true"></van-grid-item>
-        <van-grid-item icon="weapp-nav" text="OSS配置"></van-grid-item>
+        <van-grid-item icon="weapp-nav" text="OSS配置" class="grid-green"
+                       @click="router('/m/page?type=ossParams')"></van-grid-item>
         <van-grid-item icon="descending" text="数据导出"></van-grid-item>
         <van-grid-item icon="ascending" text="数据导入"></van-grid-item>
 

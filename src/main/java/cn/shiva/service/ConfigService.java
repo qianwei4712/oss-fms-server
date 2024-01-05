@@ -1,6 +1,7 @@
 package cn.shiva.service;
 
 import cn.shiva.entity.Config;
+import cn.shiva.entity.bo.OssParams;
 import cn.shiva.mapper.ConfigMapper;
 import cn.shiva.utils.CacheUtil;
 import com.alibaba.fastjson2.JSONObject;
@@ -80,5 +81,12 @@ public class ConfigService {
 
     public String key(String key) {
         return configMapper.key(key);
+    }
+
+    /**
+     * 从数据库拿到OSS相关的配置参数包装类
+     */
+    public OssParams getOssParams() {
+        return null;
     }
 }
