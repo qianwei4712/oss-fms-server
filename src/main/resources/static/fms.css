@@ -43,3 +43,14 @@ body::-webkit-scrollbar {
 .label-container::-webkit-scrollbar {
     display: none;
 }
+
+.oss-params-label{
+    color: #3d943a;
+    font-size: 12px;
+    text-indent: 20px;
+    line-height: 20px;
+}
+
+.oss-params input {
+    color: red;
+}

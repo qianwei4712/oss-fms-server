@@ -26,7 +26,7 @@ public class ManagePageController {
      * 打开页面，这里直接做好switch
      */
     @RequestMapping(value = {"/page"})
-    public String page(Model model, String type) {
+    public String page(String type) {
         switch (type) {
             case "login":
                 return "manage/login";
@@ -37,7 +37,6 @@ public class ManagePageController {
             case "recovery":
                 return "manage/recovery";
             case "ossParams":
-                model.addAttribute("ossParams", configService.getOssParams());
                 return "manage/ossParams";
             default:
                 return "manage/index";

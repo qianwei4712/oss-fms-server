@@ -87,6 +87,24 @@ public class ConfigService {
      * 从数据库拿到OSS相关的配置参数包装类
      */
     public OssParams getOssParams() {
-        return null;
+        JSONObject allParamsByJson = getAllParamsByJson();
+        return OssParams.builder()
+                .endpoint(allParamsByJson.getString("endpoint"))
+                .accessKeyId(allParamsByJson.getString("accessKeyId"))
+                .accessKeySecret(allParamsByJson.getString("accessKeySecret"))
+                .areaSuffix(allParamsByJson.getString("areaSuffix"))
+                .bucketName(allParamsByJson.getString("bucketName"))
+                .build();
+    }
+
+    /**
+     * 保存，清空连接
+     */
+    public void saveOssParams(OssParams ossParams) {
+        updateConfig("endpoint", ossParams.getEndpoint());
+        updateConfig("accessKeyId", ossParams.getAccessKeyId());
+        updateConfig("accessKeySecret", ossParams.getAccessKeySecret());
+        updateConfig("areaSuffix", ossParams.getAreaSuffix());
+        updateConfig("bucketName", ossParams.getBucketName());
     }
 }
