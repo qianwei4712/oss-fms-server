@@ -85,12 +85,14 @@
             <van-grid square :column-num="3">
                 <van-grid-item icon="medal-o" text="下载" @click="download"
                                v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
-                <van-grid-item icon="comment-o" text="打标签"></van-grid-item>
-                <van-grid-item icon="setting-o" text="描述"></van-grid-item>
+                <!--<van-grid-item icon="comment-o" text="打标签"></van-grid-item>
+                <van-grid-item icon="setting-o" text="描述"></van-grid-item>-->
                 <van-grid-item icon="aim" text="重命名" v-if="currentStatus.clickItem.type === 'file'"
                                @click="openRenameDialog(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="exchange" text="移动" v-if="currentStatus.clickItem.type === 'file'"
                                @click="openMoveDialog" class="grid-blue"></van-grid-item>
+                <van-grid-item icon="discount-o" text="更新" v-if="currentStatus.clickItem.type === 'folder'"
+                               @click="reloadFolder" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="delete-o" text="删除" @click="deleteNovel" class="grid-blue"></van-grid-item>
             </van-grid>
         </div>
@@ -286,6 +288,26 @@
                         downloadLink.dispatchEvent(clickEvent);
                         vt4.showToast('下载成功！');
                     })
+            },
+            //更新文件夹
+            reloadFolder(){
+                const that = this
+                vt4.showConfirmDialog({
+                    title: '确认更新？',
+                    message: '更新系统会先删除本地数据，重新拉取数据',
+                }).then(() => {
+                    //发请求，获取目录
+                    fetch('/api/novel/reloadFolder?folderId=' + that.currentStatus.clickItem.id, {
+                        method: 'GET',
+                        headers: that.requestHeaders,
+                    }).then(response => response.json())
+                        .then(data => {
+                            vt4.showToast('更新成功！');
+                            this.pageDataGet()
+                            that.funcDialog.show = false
+                        })
+                }).catch(() => {
+                });
             },
             //下载
             deleteNovel() {

@@ -155,6 +155,17 @@ public class NovelController {
         return novelService.renameFile(novelId, fileName);
     }
 
+    /**
+     * 更新文件夹下文件
+     * 1.删除文件夹下面的文件和文件夹，重新获取
+     */
+    @GetMapping("reloadFolder")
+    public R<String> reloadFolder(Long folderId) {
+        sqliteService.reloadFolder(folderId);
+        return R.ok();
+    }
+
+
     //TODO 更新简述，其他信息不允许更新
 
 }

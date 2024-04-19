@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * SQLite 基础服务
@@ -107,6 +108,11 @@ public class SqliteService {
             novelService.deleteNovel(novelFile);
         }
         if ("folder".equals(novelFile.getType())) {
+            //如果下级存在文件，那不允许删除
+            List<NovelFile> childNovels = novelFileMapper.listByParentId(novelFile.getId());
+            if (!childNovels.isEmpty()) {
+                return;
+            }
             //TODO 批量删除后面再做
         }
 
@@ -125,6 +131,42 @@ public class SqliteService {
         ossComponent.deleteObject(fileRecovery.getOssPath());
         //最后删除数据库
         recoveryMapper.deleteById(fileRecovery);
+    }
+
+    /**
+     * 递归删除，只删除本地数据，不动OSS
+     */
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void deleteFold(Long novelId) {
+        List<NovelFile> childNovels = novelFileMapper.listByParentId(novelId);
+        childNovels.forEach(item -> {
+            if ("folder".equals(item.getType())) {
+                deleteFold(item.getId());
+            } else {
+                //文件类型删除
+                novelFileMapper.deleteById(item);
+            }
+        });
+        NovelFile novelFile = novelFileMapper.selectById(novelId);
+        novelFileMapper.deleteById(novelFile);
+    }
+
+    /**
+     * 更新文件夹下文件
+     * 1.删除文件夹下面的文件和文件夹，重新获取
+     * 2.然后调取别的方法，更新就行
+     */
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void reloadFolder(Long folderId) {
+        //递归删除
+        NovelFile novelFile = novelFileMapper.selectById(folderId);
+        if (novelFile == null) {
+            return;
+        }
+        //先删掉数据库，重新开始加
+        deleteFold(novelFile.getId());
+        //重新加
+        differentialImport(novelFile.getOssPath());
     }
 
     /**
