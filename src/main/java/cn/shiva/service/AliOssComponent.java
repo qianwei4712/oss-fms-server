@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Date;
+import java.util.Locale;
+import java.util.UUID;
 
 /**
  * @author shiva   2023-12-17 18:14
@@ -56,18 +58,18 @@ public class AliOssComponent {
         assert originalFilename != null;
         String originalFileNameOutSuffix = originalFilename.substring(0, originalFilename.lastIndexOf("."));
         //先拿到文件后缀
-        String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
         //allowedExtension不为空的情况下，判断格式是否允许
-        if (!"TXT".equalsIgnoreCase(fileSuffix)) {
+        if (!"TXT".equalsIgnoreCase(fileSuffix.toUpperCase(Locale.ROOT))) {
             //不存在于允许的格式内，直接结束不保存
             throw new Exception("该文件格式不允许上传！");
         }
 
         //将MultipartFile转化为IO.file
-        File finalFile = File.createTempFile(originalFileNameOutSuffix, fileSuffix);
+        File finalFile = File.createTempFile(originalFileNameOutSuffix + UUID.randomUUID(), fileSuffix);
         file.transferTo(finalFile);
         //文件地址，路径 + 文件名
-        String name = folderName + "/" + originalFilename;
+        String name = folderName + originalFilename;
 
         ObjectMetadata metadata = new ObjectMetadata();
         //禁止覆盖
@@ -77,13 +79,10 @@ public class AliOssComponent {
         //拼接路径返回
         String url = "https://" + bucketName + areaSuffix + name;
 
-        //文件大小
-        long contentLength = putObjectResult.getResponse().getContentLength();
-
         //删除转化过程中生成的缓存文件
         finalFile.delete();
 
-        return NovelFile.builder().name(originalFileNameOutSuffix).size(contentLength).lastModifyTime(DateUtils.format(new Date())).ossPath(url).filePath(name).build();
+        return NovelFile.builder().name(originalFilename).type("file").lastModifyTime(DateUtils.format(new Date())).ossPath(name).filePath(url).build();
     }
 
     /**

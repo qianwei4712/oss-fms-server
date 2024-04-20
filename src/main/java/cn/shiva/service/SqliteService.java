@@ -14,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -278,5 +279,29 @@ public class SqliteService {
             listOss2Db(joinPath, parentId);
             break;
         }
+    }
+
+    /**
+     * 1.先检查上当前文件夹下面，有没有相同名字的文件；有的话不能传
+     */
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void uploadNovel(Long folderId, MultipartFile file) throws Exception {
+        //根目录文件
+        NovelFile rootFolder = novelFileMapper.selectById(folderId);
+        //下一级的列表
+        List<NovelFile> novelFiles = novelFileMapper.listByParentId(folderId);
+        if (!novelFiles.isEmpty()) {
+            //存在相同名字的，不能传
+            long count = novelFiles.stream().filter(i -> file.getOriginalFilename().equals(i.getName())).count();
+            if (count > 0) {
+                return;
+            }
+        }
+
+        //最后实际上传
+        NovelFile upload = ossComponent.upload(rootFolder.getOssPath(), file);
+        upload.setSize(CommonUtil.calcFileSize(file.getSize()));
+        upload.setParentId(folderId);
+        novelFileMapper.insert(upload);
     }
 }
