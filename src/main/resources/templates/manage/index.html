@@ -93,6 +93,8 @@
                                @click="openMoveDialog" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="discount-o" text="更新" v-if="currentStatus.clickItem.type === 'folder'"
                                @click="reloadFolder" class="grid-blue"></van-grid-item>
+                <van-grid-item icon="upgrade" text="上传文件" v-if="currentStatus.clickItem.type === 'folder'"
+                               @click="uploadFileDialog(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="delete-o" text="删除" @click="deleteNovel" class="grid-blue"></van-grid-item>
             </van-grid>
         </div>
@@ -125,6 +127,19 @@
         </div>
     </van-dialog>
 
+    <van-dialog v-model:show="uploadNovelDialog.open" title="上传到当前目录下">
+        <div style="margin: 5px">
+            <div style="color:#8b8b8b;margin: 0 5px;text-indent: 5px">
+                <van-highlight :keywords="'/'" :source-string="uploadNovelDialog.currentPath"></van-highlight>
+            </div>
+            <div style="text-align: center;margin: 10px 0">
+                <van-uploader accept="text" :after-read="startUpload">
+                    <van-button icon="plus" style="height: 108px;">上传文件</van-button>
+                </van-uploader>
+            </div>
+        </div>
+    </van-dialog>
+
     <van-floating-bubble icon="cluster" @click="morePage"></van-floating-bubble>
 </div>
 <script>
@@ -134,9 +149,11 @@
             return {
                 types: ["primary", "success", "warning", "danger"],
                 requestHeaders: {},
+                formDataHeaders: {},
                 searchStr: '', //搜索框输入内容
                 uploadNovelDialog: { //上传小说
                     open: false,
+                    currentPath: '',//当前上传路径
                 },
                 moveFileDialog: {
                     show: false,
@@ -172,6 +189,10 @@
                 that.token();
                 //再计算RSA加密
                 that.requestHeaders = commonHeaders()
+                that.formDataHeaders = {
+                    'Authorization': that.requestHeaders.Authorization,
+                    'Auth-Source-Type': 'SERVERUI'
+                }
             }, 200)
         },
         methods: {
@@ -290,7 +311,7 @@
                     })
             },
             //更新文件夹
-            reloadFolder(){
+            reloadFolder() {
                 const that = this
                 vt4.showConfirmDialog({
                     title: '确认更新？',
@@ -308,6 +329,29 @@
                         })
                 }).catch(() => {
                 });
+            },
+            //上传文件窗口
+            uploadFileDialog(checkItem) {
+                const that = this
+                this.funcDialog.show = false
+                this.uploadNovelDialog.open = true
+                this.uploadNovelDialog.currentPath = checkItem.ossPath
+            },
+            //开始上传文件
+            startUpload(file) {
+                console.log(file)
+                const that = this
+                const formData = new FormData();
+                formData.append('file', file.file);
+                fetch('/api/novel/uploadNovel?folderId=' + that.currentStatus.clickItem.id, {
+                    method: 'POST',
+                    headers: that.formDataHeaders,
+                    body: formData
+                }).then(response => response.json())
+                    .then(data => {
+                        vt4.showToast('上传成功！');
+                        that.uploadNovelDialog.open = false
+                    })
             },
             //下载
             deleteNovel() {

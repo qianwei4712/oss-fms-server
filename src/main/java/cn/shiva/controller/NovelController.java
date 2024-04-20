@@ -10,9 +10,8 @@ import cn.shiva.service.NovelService;
 import cn.shiva.service.SqliteService;
 import cn.shiva.utils.ThreadPool;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -165,6 +164,14 @@ public class NovelController {
         return R.ok();
     }
 
+    /**
+     * 上传文件到指定目录下
+     * 1.拿到目录ID和文件
+     */
+    @PostMapping("uploadNovel")
+    public R<String> uploadNovel(String folderId, MultipartFile file) {
+        return R.ok();
+    }
 
     //TODO 更新简述，其他信息不允许更新
 
