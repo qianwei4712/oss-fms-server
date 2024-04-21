@@ -18,6 +18,6 @@ public interface SqliteMapper {
     /**
      * 清空小说标签关联表
      */
-    @Delete("DELETE FROM novel_label;")
+    @Delete("DELETE FROM mid_file_label;")
     int clearNovelLabel();
 }

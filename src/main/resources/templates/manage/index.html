@@ -58,7 +58,7 @@
                                     <van-col span="18">
                                         <div class="label-container">
                                             <van-tag :type="randomType(index)" v-for="(lable, index) in item.labels">
-                                                {{lable}}
+                                                {{lable.name}}
                                             </van-tag>
                                         </div>
                                     </van-col>
@@ -85,8 +85,9 @@
             <van-grid square :column-num="3">
                 <van-grid-item icon="medal-o" text="下载" @click="download"
                                v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
-                <!--<van-grid-item icon="comment-o" text="打标签"></van-grid-item>
-                <van-grid-item icon="setting-o" text="描述"></van-grid-item>-->
+                <van-grid-item icon="comment-o" text="打标签" @click="editLabelsOpen"
+                               v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
+                <!--<van-grid-item icon="setting-o" text="描述"></van-grid-item>-->
                 <van-grid-item icon="aim" text="重命名" v-if="currentStatus.clickItem.type === 'file'"
                                @click="openRenameDialog(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
                 <van-grid-item icon="exchange" text="移动" v-if="currentStatus.clickItem.type === 'file'"
@@ -140,6 +141,31 @@
         </div>
     </van-dialog>
 
+    <van-dialog v-model:show="editLabelsDialog.show" title="文件打标签">
+        <div style="margin: 5px">
+            <h4 style="margin: 0">已打标</h4>
+            <div style="padding: 5px 15px" class="label-list">
+                <van-tag v-for="(item, index) in editLabelsDialog.currentLabels"
+                         type="primary"
+                         size="large"
+                         @click="removeLabel(item)"
+                >
+                    {{item.name}}
+                </van-tag>
+            </div>
+            <h4 style="margin: 0">可打标</h4>
+            <div style="padding: 5px 15px" class="label-list">
+                <van-tag v-for="(item, index) in editLabelsDialog.ableLabels"
+                         type="success"
+                         size="large"
+                         @click="addLabel(item)"
+                >
+                    {{item.name}}
+                </van-tag>
+            </div>
+        </div>
+    </van-dialog>
+
     <van-floating-bubble icon="cluster" @click="morePage"></van-floating-bubble>
 </div>
 <script>
@@ -150,6 +176,7 @@
                 types: ["primary", "success", "warning", "danger"],
                 requestHeaders: {},
                 formDataHeaders: {},
+                listLabels: [],//初始化全部标签
                 searchStr: '', //搜索框输入内容
                 uploadNovelDialog: { //上传小说
                     open: false,
@@ -180,6 +207,11 @@
                 renameFile: {//重命名弹窗
                     show: false,
                     value: ''
+                },
+                editLabelsDialog: {//编辑标签弹窗
+                    show: false,
+                    currentLabels: [],//已打上的标签
+                    ableLabels: [],//可打标的标签
                 }
             }
         },
@@ -193,6 +225,7 @@
                     'Authorization': that.requestHeaders.Authorization,
                     'Auth-Source-Type': 'SERVERUI'
                 }
+                that.listLabelsData()
             }, 200)
         },
         methods: {
@@ -446,6 +479,58 @@
                         } else {
                             vt4.showToast(data.message);
                         }
+                    })
+            },
+            //打开标签修改弹窗
+            editLabelsOpen() {
+                //已用标签,直接复制过来就好了；
+                this.editLabelsDialog.currentLabels = this.currentStatus.clickItem.labels
+                //可用标签，需要经过过滤，把已经打上的移除掉
+                this.editLabelsDialog.ableLabels = this.filterLabels()
+                this.editLabelsDialog.show = true
+            },
+            //拿到全部的标签列表
+            listLabelsData() {
+                const that = this
+                //发请求，获取目录
+                fetch('/api/label/allLabels', {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        that.listLabels = data.data
+                    })
+            },
+            //过滤掉已经打上的标签
+            filterLabels() {
+                //可用标签，需要经过过滤，把已经打上的移除掉
+                return this.listLabels
+                    .filter(item => !this.currentStatus.clickItem.labels.some(bItem => bItem.id === item.id));
+            },
+            //标签更新，点上面移除关联，点下面添加关联
+            //新增标签
+            addLabel(item) {
+                const that = this
+                fetch('/api/label/addRelationLabel?novelId=' + this.currentStatus.clickItem.id
+                    + '&labelId=' + item.id, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(() => {
+                        that.editLabelsDialog.ableLabels.splice(that.editLabelsDialog.ableLabels.indexOf(item), 1)
+                        that.editLabelsDialog.currentLabels.push(item)
+                    })
+            },
+            removeLabel(item) {
+                const that = this
+                fetch('/api/label/removeRelationLabel?novelId=' + this.currentStatus.clickItem.id
+                    + '&labelId=' + item.id, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(() => {
+                        that.editLabelsDialog.currentLabels.splice(that.editLabelsDialog.currentLabels.indexOf(item), 1)
+                        that.editLabelsDialog.ableLabels.push(item)
                     })
             }
         }

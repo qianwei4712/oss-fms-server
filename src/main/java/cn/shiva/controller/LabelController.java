@@ -82,7 +82,28 @@ public class LabelController {
 
     //文件-标签操作 **************************************************************************************************************************
 
-    //TODO 给文件、文件夹添加标签
-    //TODO 将文件、文件夹移除某个标签
+    /**
+     * 给文件、文件夹添加标签
+     */
+    @GetMapping("/addRelationLabel")
+    public R<String> addRelationLabel(Long novelId, Long labelId) {
+        if (novelId == null || labelId == null) {
+            return R.ok();
+        }
+        novelLabelMapper.insertMidNovelLabel(novelId, labelId);
+        return R.ok();
+    }
+
+    /**
+     * 将文件、文件夹移除某个标签
+     */
+    @GetMapping("/removeRelationLabel")
+    public R<String> removeRelationLabel(Long novelId, Long labelId) {
+        if (novelId == null || labelId == null) {
+            return R.ok();
+        }
+        novelLabelMapper.removeMidNovelLabel(novelId, labelId);
+        return R.ok();
+    }
 
 }

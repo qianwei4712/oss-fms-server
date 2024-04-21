@@ -9,8 +9,8 @@
         DELETE FROM mid_file_label WHERE label_id = #{labelId}
     </delete>
 
-    <select id="listLabelsByNovelId" resultType="java.lang.String">
-        SELECT nl.name
+    <select id="listLabelsByNovelId" resultType="cn.shiva.entity.NovelLabel">
+        SELECT nl.*
         FROM mid_file_label mfl
         LEFT JOIN novel_file nf ON nf.id = mfl.file_id
         LEFT JOIN novel_label nl ON nl.id = mfl.label_id

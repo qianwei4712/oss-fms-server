@@ -72,7 +72,7 @@ public class NovelFile {
      * 该文件对应得标签
      */
     @TableField(exist = false)
-    private List<String> labels;
+    private List<NovelLabel> labels;
     /**
      * 目录位置，去除了名字和头部
      */
