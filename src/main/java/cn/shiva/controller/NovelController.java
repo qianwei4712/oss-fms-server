@@ -168,8 +168,10 @@ public class NovelController {
      * 上传文件到指定目录下
      */
     @PostMapping("uploadNovel")
-    public R<String> uploadNovel(Long folderId, MultipartFile file) throws Exception {
-        sqliteService.uploadNovel(folderId, file);
+    public R<String> uploadNovel(Long folderId, MultipartFile[] files) throws Exception {
+        for (MultipartFile file : files) {
+            sqliteService.uploadNovel(folderId, file);
+        }
         return R.ok();
     }
 

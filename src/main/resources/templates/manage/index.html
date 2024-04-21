@@ -134,7 +134,7 @@
                 <van-highlight :keywords="'/'" :source-string="uploadNovelDialog.currentPath"></van-highlight>
             </div>
             <div style="text-align: center;margin: 10px 0">
-                <van-uploader accept="text" :after-read="startUpload">
+                <van-uploader accept="text" multiple :after-read="startUpload">
                     <van-button icon="plus" style="height: 108px;">上传文件</van-button>
                 </van-uploader>
             </div>
@@ -154,7 +154,7 @@
                     {{item.name}}
                 </van-tag>
             </div>
-            <h4 style="margin: 0">可打标</h4>
+            <h4 style="margin: 5px 0 0 0;">可打标</h4>
             <div style="padding: 5px 15px" class="label-list">
                 <van-tag v-for="(item, index) in editLabelsDialog.ableLabels"
                          type="success"
@@ -373,11 +373,13 @@
                 this.uploadNovelDialog.currentPath = checkItem.ossPath
             },
             //开始上传文件
-            startUpload(file) {
-                console.log(file)
+            startUpload(files) {
+                console.log(files)
                 const that = this
                 const formData = new FormData();
-                formData.append('file', file.file);
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('files', files[i].file);
+                }
                 fetch('/api/novel/uploadNovel?folderId=' + that.currentStatus.clickItem.id, {
                     method: 'POST',
                     headers: that.formDataHeaders,
