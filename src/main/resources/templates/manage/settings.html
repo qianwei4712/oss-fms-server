@@ -28,7 +28,8 @@
     </div>
 
     <van-grid :column-num="3">
-        <van-grid-item icon="coupon" text="标签管理"></van-grid-item>
+        <van-grid-item icon="coupon" text="标签管理" class="grid-green"
+                       @click="router('/m/page?type=labels')"></van-grid-item>
         <van-grid-item icon="delete" text="回收站" class="grid-green"
                        @click="router('/m/page?type=recovery')"></van-grid-item>
         <van-grid-item icon="umbrella-circle" text="OSS数据初始化" class="grid-green"
@@ -49,8 +50,11 @@
                 @confirm="differentialImportStart()"
                 @open="differentialImport.path = ''"
                 show-cancel-button>
-        <input v-model="differentialImport.path" placeholder="请输入新路径" class="pwd-init-input" style="margin: 30px 30px 10px 30px;width: 80%"/>
-        <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">例如：novel/新文件夹/子文件夹/</div>
+        <input v-model="differentialImport.path" placeholder="请输入新路径" class="pwd-init-input"
+               style="margin: 30px 30px 10px 30px;width: 80%"/>
+        <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">
+            例如：novel/新文件夹/子文件夹/
+        </div>
     </van-dialog>
 
     <van-floating-bubble icon="wap-home" @click="homepage" style="color: white;background-color: green"/>

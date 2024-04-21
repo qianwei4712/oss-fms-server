@@ -3,6 +3,7 @@ package cn.shiva.service;
 import cn.shiva.core.domain.R;
 import cn.shiva.entity.FileRecovery;
 import cn.shiva.entity.NovelFile;
+import cn.shiva.entity.NovelLabel;
 import cn.shiva.mapper.FileRecoveryMapper;
 import cn.shiva.mapper.NovelFileMapper;
 import cn.shiva.mapper.NovelLabelMapper;
@@ -115,4 +116,17 @@ public class NovelService {
         return R.ok("重命名成功");
     }
 
+    /**
+     * 删除标签，并且删除中间表
+     */
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void deleteLabel(Long labelId) {
+        NovelLabel novelLabel = labelMapper.selectById(labelId);
+        if (novelLabel == null) {
+            return;
+        }
+        //两边一起删
+        labelMapper.deleteById(labelId);
+        labelMapper.deleteByLabelId(labelId);
+    }
 }

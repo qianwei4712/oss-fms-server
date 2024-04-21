@@ -5,6 +5,9 @@
     <delete id="deleteByNovelId">
         DELETE FROM mid_file_label WHERE file_id = #{novelId}
     </delete>
+    <delete id="deleteByLabelId">
+        DELETE FROM mid_file_label WHERE label_id = #{labelId}
+    </delete>
 
     <select id="listLabelsByNovelId" resultType="java.lang.String">
         SELECT nl.name

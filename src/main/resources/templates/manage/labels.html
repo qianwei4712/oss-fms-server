@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>标签管理</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="author" content="shiva"/>
+    <meta name="renderer" content="webkit"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/fms.css}" media="all">
+    <script th:src="@{/static/plugin/vue.global.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/plugin/vant/index.css}" media="all">
+    <script th:src="@{/static/plugin/vant/vant.min.js}"></script>
+    <link rel="icon" th:href="@{/static/images/favicon.ico}" type="image/x-icon"/>
+    <link rel="shortcut icon" th:href="@{/static/images/favicon.ico}"/>
+
+    <script th:src="@{/static/plugin/jsencrypt.min.js}"></script>
+    <script th:src="@{/static/common.js}"></script>
+</head>
+<body>
+<div id="app">
+    <div>
+        <div style="margin: 10px 10px 0 10px">
+            <van-button type="danger" @click="addNewLabel" block>新增标签</van-button>
+        </div>
+        <!-- 标签列表区域 -->
+        <div style="padding: 25px 15px" class="label-list">
+            <van-tag v-for="(item, index) in listData"
+                     :type="randomType(index)"
+                     size="large"
+                     @click="openFunction(item)"
+            >
+                {{item.name}}
+            </van-tag>
+        </div>
+    </div>
+
+    <van-dialog v-model:show="newLabelDialog.open" title="标签保存"
+                @confirm="actualSaveLabel()"
+                show-cancel-button>
+        <input v-model="newLabelDialog.value" placeholder="请输入新标签名" class="pwd-init-input"
+               style="margin: 30px 30px 10px 30px;width: 80%"/>
+        <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">
+            相同标签不会保存！
+        </div>
+    </van-dialog>
+
+    <!-- 底部弹窗 -->
+    <van-action-sheet v-model:show="funcDialog.show">
+        <div style="margin: 15px">
+            <van-grid square :column-num="2">
+                <van-grid-item icon="records-o" text="编辑" class="grid-blue" @click="editLabel"></van-grid-item>
+                <van-grid-item icon="delete-o" text="删除" class="grid-blue"
+                               @click="deleteLabel"></van-grid-item>
+            </van-grid>
+        </div>
+    </van-action-sheet>
+
+    <van-floating-bubble icon="wap-home" @click="homepage"
+                         style="color: white;background-color: green"></van-floating-bubble>
+</div>
+<script>
+    Vue.createApp({
+        el: '#app',
+        data() {
+            return {
+                types: ["primary", "success", "danger", "warning"],
+                requestHeaders: {},
+                listData: [],//标签列表
+                newLabelDialog: {
+                    open: false,
+                    value: '',
+                    currentId: null
+                },
+                currentStatus: { //记录页面的基础状态
+                    clickItem: null, //当前点击得对象
+                },
+                funcDialog: {// 功能弹窗
+                    show: false,
+                }
+            }
+        },
+        created() {
+            const that = this
+            setTimeout(() => {
+                that.requestHeaders = commonHeaders()
+                that.listDataGet()
+            }, 200)
+        },
+        methods: {
+            homepage() {
+                window.location.href = '/m/index'
+            },
+            //标签的样式：primary success danger warning
+            randomType(index) {
+                return this.types[index % 4];
+            },
+            //打开底部功能区
+            openFunction(obj) {
+                this.currentStatus.clickItem = obj
+                this.funcDialog.show = true
+            },
+            //拿到全部的标签列表
+            listDataGet() {
+                const that = this
+                //发请求，获取目录
+                fetch('/api/label/allLabels', {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        that.listData = data.data
+                    })
+            },
+            //开始编辑
+            editLabel() {
+                this.newLabelDialog.value = this.currentStatus.clickItem.name
+                this.newLabelDialog.currentId = this.currentStatus.clickItem.id
+                this.newLabelDialog.open = true
+            },
+            //点击新增标签按钮
+            addNewLabel() {
+                this.newLabelDialog.value = ''
+                this.newLabelDialog.currentId = null
+                this.newLabelDialog.open = true
+            },
+            //实际新增请求
+            actualSaveLabel() {
+                if (this.newLabelDialog.currentId == null) {
+                    this.addNewGet()
+                } else {
+                    this.updateGet()
+                }
+            },
+            //新增请求
+            addNewGet() {
+                const that = this
+                //发请求，获取目录
+                fetch('/api/label/addLabel?name=' + this.newLabelDialog.value, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(() => {
+                        that.listDataGet()
+                    })
+            },
+            //更新请求
+            updateGet() {
+                const that = this
+                //发请求，获取目录
+                fetch('/api/label/updateLabel?name=' + this.newLabelDialog.value
+                    + '&id=' + this.newLabelDialog.currentId, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(() => {
+                        that.listDataGet()
+                        this.funcDialog.show = false
+                    })
+            },
+            //删除标签
+            deleteLabel() {
+                const that = this
+                vt4.showConfirmDialog({
+                    title: '警告！警告！',
+                    message: '删除标签后，无法恢复！！！',
+                }).then(() => {
+                    //发请求，获取目录
+                    fetch('/api/label/deleteLabel?id=' + that.currentStatus.clickItem.id, {
+                        method: 'GET',
+                        headers: that.requestHeaders,
+                    }).then(response => response.json())
+                        .then(data => {
+                            vt4.showToast('删除成功');
+                            that.listDataGet()
+                            this.funcDialog.show = false
+                        })
+                }).catch(() => {
+                });
+            }
+        }
+    }).use(vant).mount("#app");
+    const vt4 = vant;
+</script>
+</body>
+</html>

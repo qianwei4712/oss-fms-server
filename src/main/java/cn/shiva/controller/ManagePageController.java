@@ -38,6 +38,8 @@ public class ManagePageController {
                 return "manage/recovery";
             case "ossParams":
                 return "manage/ossParams";
+            case "labels":
+                return "manage/labels";
             default:
                 return "manage/index";
         }

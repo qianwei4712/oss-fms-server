@@ -44,7 +44,7 @@ body::-webkit-scrollbar {
     display: none;
 }
 
-.oss-params-label{
+.oss-params-label {
     color: #3d943a;
     font-size: 12px;
     text-indent: 20px;
@@ -53,4 +53,9 @@ body::-webkit-scrollbar {
 
 .oss-params input {
     color: red;
+}
+
+.label-list .van-tag {
+    margin-right: 10px;
+    margin-bottom: 5px;
 }
