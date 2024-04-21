@@ -66,4 +66,16 @@ public class RecoveryController {
         return R.ok();
     }
 
+    /**
+     * 删除全部文件
+     */
+    @GetMapping("allDelete")
+    public R<String> allDelete() {
+        List<FileRecovery> list = recoveryMapper.listAll();
+        for (FileRecovery item : list) {
+            sqliteService.completelyDeleteFile(item.getId());
+        }
+        return R.ok();
+    }
+
 }

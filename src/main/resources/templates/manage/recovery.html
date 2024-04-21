@@ -30,6 +30,9 @@
                 finished-text="全部资源都在这里了~"
                 @load="onLoadTreeData"
         >
+            <div style="margin: 10px">
+                <van-button type="danger" @click="allDelete" block>全部删除</van-button>
+            </div>
             <van-cell v-for="item in treeData.list" :key="item">
                 <van-row>
                     <van-col span="2">
@@ -171,6 +174,28 @@
                         that.treeData.list.splice(that.treeData.list.indexOf(that.currentStatus.clickItem), 1)
                         that.funcDialog.show = false
                     })
+            },
+            //全部删除
+            allDelete() {
+                const that = this
+                vt4.showConfirmDialog({
+                    title: '警告！警告！！！！',
+                    message: '删除后文件无法恢复！！！',
+                }).then(() => {
+                    fetch('/api/recovery/allDelete', {
+                        method: 'GET',
+                        headers: that.requestHeaders,
+                    }).then(response => response.json())
+                        .then(data => {
+                            if (data.code === 500) {
+                                vt4.showToast(data.message);
+                                return false;
+                            }
+                            vt4.showToast('全部已删除');
+                            that.pageDataGet()
+                        })
+                }).catch(() => {
+                });
             }
         }
     }).use(vant).mount("#app");
