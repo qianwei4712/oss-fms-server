@@ -10,6 +10,7 @@ import com.alibaba.fastjson2.util.DateUtils;
 import com.aliyun.oss.model.ListObjectsV2Result;
 import com.aliyun.oss.model.OSSObjectSummary;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,10 @@ public class SqliteService {
                     .ossPath(key).filePath("https://" + ossComponent.getBucketName() + ossComponent.getAreaSuffix() + key)
                     .parentId(parentId)
                     .build();
+            //在OSS创建的文件夹，会附带一个空文件，这个就不保存了
+            if (StringUtils.isBlank(build.getName()) && build.getSize() == 0) {
+                continue;
+            }
             novelFileMapper.insert(build);
         }
         // 遍历文件夹：
