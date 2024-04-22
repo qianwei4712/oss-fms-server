@@ -114,7 +114,8 @@ public class SqliteService {
             if (!childNovels.isEmpty()) {
                 return;
             }
-            //TODO 批量删除后面再做
+            // 只删sqlite，OSS自己去动
+            novelFileMapper.deleteById(novelFile.getId());
         }
 
     }
