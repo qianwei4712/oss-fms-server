@@ -377,9 +377,16 @@
                 console.log(files)
                 const that = this
                 const formData = new FormData();
-                for (let i = 0; i < files.length; i++) {
-                    formData.append('files', files[i].file);
+                if (files instanceof Array) {
+                    //列表的话需要便利
+                    for (let i = 0; i < files.length; i++) {
+                        formData.append('files', files[i].file);
+                    }
+                } else {
+                    //单个文件直接传
+                    formData.append('files', files.file);
                 }
+
                 fetch('/api/novel/uploadNovel?folderId=' + that.currentStatus.clickItem.id, {
                     method: 'POST',
                     headers: that.formDataHeaders,
