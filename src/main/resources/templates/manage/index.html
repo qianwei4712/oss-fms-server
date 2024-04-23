@@ -22,159 +22,165 @@
 </head>
 <body>
 <div id="app">
-    <input ref="token" name="token" th:value="${token}" type="hidden"/>
-    <div style="position: fixed;top: 0; width: 100%;z-index: 999;">
-        <van-search
-                v-model="searchStr"
-                placeholder="请输入搜索关键词"
-                @search="onSearch"
-                action-text="返回"
-                show-action
-                @cancel="back"
-        ></van-search>
-    </div>
-    <div style="margin-top: 50px">
-        <!-- 文件树的区域 -->
-        <van-list
-                v-model:loading="treeData.loading"
-                :finished="treeData.finished"
-                finished-text="全部资源都在这里了~"
-                @load="onLoadTreeData"
-        >
-            <van-cell v-for="item in treeData.list" :key="item">
-                <van-row>
-                    <van-col span="2">
-                        <div style="vertical-align: middle;line-height: 45px">
-                            <img v-if="item.type == 'file'" src="/static/images/icon/file.png" style="height: 35px">
-                            <img v-if="item.type == 'folder'" src="/static/images/icon/folder.png" style="height: 35px">
-                        </div>
-                    </van-col>
-                    <van-col span="20">
-                        <div style="text-align: left;margin-left: 15px" @click="pointItem(item)">
-                            <div style="font-weight: bold">{{item.name}}</div>
-                            <div style="font-size: 11px" v-if="currentStatus.searchResult">{{item.realPath}}</div>
-                            <div>
-                                <van-row gutter="20">
-                                    <van-col span="18">
-                                        <div class="label-container">
-                                            <van-tag :type="randomType(index)" v-for="(lable, index) in item.labels">
-                                                {{lable.name}}
-                                            </van-tag>
-                                        </div>
-                                    </van-col>
-                                    <van-col span="6" style="font-size: 12px;text-align: right" v-if="item.size > 0">
-                                        {{item.size}} Kb
-                                    </van-col>
-                                </van-row>
+    <van-config-provider :theme="theme">
+        <input ref="token" name="token" th:value="${token}" type="hidden"/>
+        <div style="position: fixed;top: 0; width: 100%;z-index: 999;">
+            <van-search
+                    v-model="searchStr"
+                    placeholder="请输入搜索关键词"
+                    @search="onSearch"
+                    action-text="返回"
+                    show-action
+                    @cancel="back"
+            ></van-search>
+        </div>
+        <div style="margin-top: 50px">
+            <!-- 文件树的区域 -->
+            <van-list
+                    v-model:loading="treeData.loading"
+                    :finished="treeData.finished"
+                    finished-text="全部资源都在这里了~"
+                    @load="onLoadTreeData"
+            >
+                <van-cell v-for="item in treeData.list" :key="item">
+                    <van-row>
+                        <van-col span="2">
+                            <div style="vertical-align: middle;line-height: 45px">
+                                <img v-if="item.type == 'file'" src="/static/images/icon/file.png" style="height: 35px">
+                                <img v-if="item.type == 'folder'" src="/static/images/icon/folder.png"
+                                     style="height: 35px">
                             </div>
-                        </div>
-                    </van-col>
-                    <van-col span="2">
-                        <div style="line-height: 45px;text-align: center" @click="openFunction(item)">
-                            <van-icon name="ellipsis"/>
-                        </div>
-                    </van-col>
-                </van-row>
-            </van-cell>
-        </van-list>
-    </div>
-
-    <!-- 底部弹窗 -->
-    <van-action-sheet v-model:show="funcDialog.show">
-        <div style="margin: 15px">
-            <van-grid square :column-num="3">
-                <van-grid-item icon="medal-o" text="下载" @click="download"
-                               v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
-                <van-grid-item icon="comment-o" text="打标签" @click="editLabelsOpen"
-                               v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
-                <!--<van-grid-item icon="setting-o" text="描述"></van-grid-item>-->
-                <van-grid-item icon="aim" text="重命名" v-if="currentStatus.clickItem.type === 'file'"
-                               @click="openRenameDialog(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
-                <van-grid-item icon="exchange" text="移动" v-if="currentStatus.clickItem.type === 'file'"
-                               @click="openMoveDialog" class="grid-blue"></van-grid-item>
-                <van-grid-item icon="discount-o" text="更新" v-if="currentStatus.clickItem.type === 'folder'"
-                               @click="reloadFolder" class="grid-blue"></van-grid-item>
-                <van-grid-item icon="upgrade" text="上传文件" v-if="currentStatus.clickItem.type === 'folder'"
-                               @click="uploadFileDialog(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
-                <van-grid-item icon="delete-o" text="删除" @click="deleteNovel" class="grid-blue"></van-grid-item>
-            </van-grid>
+                        </van-col>
+                        <van-col span="20">
+                            <div style="text-align: left;margin-left: 15px" @click="pointItem(item)">
+                                <div style="font-weight: bold">{{item.name}}</div>
+                                <div style="font-size: 11px" v-if="currentStatus.searchResult">{{item.realPath}}</div>
+                                <div>
+                                    <van-row gutter="20">
+                                        <van-col span="18">
+                                            <div class="label-container">
+                                                <van-tag :type="randomType(index)"
+                                                         v-for="(lable, index) in item.labels">
+                                                    {{lable.name}}
+                                                </van-tag>
+                                            </div>
+                                        </van-col>
+                                        <van-col span="6" style="font-size: 12px;text-align: right"
+                                                 v-if="item.size > 0">
+                                            {{item.size}} Kb
+                                        </van-col>
+                                    </van-row>
+                                </div>
+                            </div>
+                        </van-col>
+                        <van-col span="2">
+                            <div style="line-height: 45px;text-align: center" @click="openFunction(item)">
+                                <van-icon name="ellipsis"/>
+                            </div>
+                        </van-col>
+                    </van-row>
+                </van-cell>
+            </van-list>
         </div>
-    </van-action-sheet>
 
-    <van-dialog v-model:show="moveFileDialog.show" title="选择移动文件夹"
-                @confirm="actualMove"
-                show-cancel-button>
-        <div>
-            <van-cell>
-                <div style="text-align: left;margin-left: 15px" @click="nextFolder(moveFileDialog.rootObj)">
-                    <div style="font-weight: bold">......</div>
+        <!-- 底部弹窗 -->
+        <van-action-sheet v-model:show="funcDialog.show">
+            <div style="margin: 15px">
+                <van-grid square :column-num="3">
+                    <van-grid-item icon="medal-o" text="下载" @click="download"
+                                   v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
+                    <van-grid-item icon="comment-o" text="打标签" @click="editLabelsOpen"
+                                   v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
+                    <!--<van-grid-item icon="setting-o" text="描述"></van-grid-item>-->
+                    <van-grid-item icon="aim" text="重命名" v-if="currentStatus.clickItem.type === 'file'"
+                                   @click="openRenameDialog(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
+                    <van-grid-item icon="exchange" text="移动" v-if="currentStatus.clickItem.type === 'file'"
+                                   @click="openMoveDialog" class="grid-blue"></van-grid-item>
+                    <van-grid-item icon="discount-o" text="更新" v-if="currentStatus.clickItem.type === 'folder'"
+                                   @click="reloadFolder" class="grid-blue"></van-grid-item>
+                    <van-grid-item icon="upgrade" text="上传文件" v-if="currentStatus.clickItem.type === 'folder'"
+                                   @click="uploadFileDialog(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
+                    <van-grid-item icon="delete-o" text="删除" @click="deleteNovel" class="grid-blue"></van-grid-item>
+                </van-grid>
+            </div>
+        </van-action-sheet>
+
+        <van-dialog v-model:show="moveFileDialog.show" title="选择移动文件夹"
+                    @confirm="actualMove"
+                    show-cancel-button>
+            <div>
+                <van-cell>
+                    <div style="text-align: left;margin-left: 15px" @click="nextFolder(moveFileDialog.rootObj)">
+                        <div style="font-weight: bold">......</div>
+                    </div>
+                </van-cell>
+                <van-cell v-for="item in moveFileDialog.list" :key="item">
+                    <div style="text-align: left;margin-left: 15px" @click="nextFolder(item)">
+                        <div style="font-weight: bold">{{item.name}}</div>
+                    </div>
+                </van-cell>
+            </div>
+        </van-dialog>
+
+        <van-dialog v-model:show="renameFile.show" title="重命名文件"
+                    @confirm="actualRename()"
+                    show-cancel-button>
+            <input v-model="renameFile.value" placeholder="请输入新文件名" class="pwd-init-input"
+                   style="margin: 30px 30px 10px 30px;width: 80%"/>
+            <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">
+                .txt 后缀自动拼接
+            </div>
+        </van-dialog>
+
+        <van-dialog v-model:show="uploadNovelDialog.open" title="上传到当前目录下">
+            <div style="margin: 5px">
+                <div style="color:#8b8b8b;margin: 0 5px;text-indent: 5px">
+                    <van-highlight :keywords="'/'" :source-string="uploadNovelDialog.currentPath"></van-highlight>
                 </div>
-            </van-cell>
-            <van-cell v-for="item in moveFileDialog.list" :key="item">
-                <div style="text-align: left;margin-left: 15px" @click="nextFolder(item)">
-                    <div style="font-weight: bold">{{item.name}}</div>
+                <div style="text-align: center;margin: 10px 0">
+                    <van-uploader accept="text" multiple :after-read="startUpload">
+                        <van-button icon="plus" style="height: 108px;">上传文件</van-button>
+                    </van-uploader>
                 </div>
-            </van-cell>
-        </div>
-    </van-dialog>
-
-    <van-dialog v-model:show="renameFile.show" title="重命名文件"
-                @confirm="actualRename()"
-                show-cancel-button>
-        <input v-model="renameFile.value" placeholder="请输入新文件名" class="pwd-init-input"
-               style="margin: 30px 30px 10px 30px;width: 80%"/>
-        <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">
-            .txt 后缀自动拼接
-        </div>
-    </van-dialog>
-
-    <van-dialog v-model:show="uploadNovelDialog.open" title="上传到当前目录下">
-        <div style="margin: 5px">
-            <div style="color:#8b8b8b;margin: 0 5px;text-indent: 5px">
-                <van-highlight :keywords="'/'" :source-string="uploadNovelDialog.currentPath"></van-highlight>
             </div>
-            <div style="text-align: center;margin: 10px 0">
-                <van-uploader accept="text" multiple :after-read="startUpload">
-                    <van-button icon="plus" style="height: 108px;">上传文件</van-button>
-                </van-uploader>
-            </div>
-        </div>
-    </van-dialog>
+        </van-dialog>
 
-    <van-dialog v-model:show="editLabelsDialog.show" title="文件打标签">
-        <div style="margin: 5px">
-            <h4 style="margin: 0">已打标</h4>
-            <div style="padding: 5px 15px" class="label-list">
-                <van-tag v-for="(item, index) in editLabelsDialog.currentLabels"
-                         type="primary"
-                         size="large"
-                         @click="removeLabel(item)"
-                         style=" margin-right: 10px;margin-bottom: 5px;"
-                >
-                    {{item.name}}
-                </van-tag>
+        <van-dialog v-model:show="editLabelsDialog.show" title="文件打标签">
+            <div style="margin: 5px">
+                <h4 style="margin: 0">已打标</h4>
+                <div style="padding: 5px 15px" class="label-list">
+                    <van-tag v-for="(item, index) in editLabelsDialog.currentLabels"
+                             type="primary"
+                             size="large"
+                             @click="removeLabel(item)"
+                             style=" margin-right: 10px;margin-bottom: 5px;"
+                    >
+                        {{item.name}}
+                    </van-tag>
+                </div>
+                <h4 style="margin: 5px 0 0 0;">可打标</h4>
+                <div style="padding: 5px 15px" class="label-list">
+                    <van-tag v-for="(item, index) in editLabelsDialog.ableLabels"
+                             type="success"
+                             size="large"
+                             @click="addLabel(item)"
+                             style=" margin-right: 10px;margin-bottom: 5px;"
+                    >
+                        {{item.name}}
+                    </van-tag>
+                </div>
             </div>
-            <h4 style="margin: 5px 0 0 0;">可打标</h4>
-            <div style="padding: 5px 15px" class="label-list">
-                <van-tag v-for="(item, index) in editLabelsDialog.ableLabels"
-                         type="success"
-                         size="large"
-                         @click="addLabel(item)"
-                         style=" margin-right: 10px;margin-bottom: 5px;"
-                >
-                    {{item.name}}
-                </van-tag>
-            </div>
-        </div>
-    </van-dialog>
+        </van-dialog>
 
-    <van-floating-bubble icon="cluster" @click="morePage"></van-floating-bubble>
+        <van-floating-bubble icon="cluster" @click="morePage"></van-floating-bubble>
+    </van-config-provider>
 </div>
 <script>
     Vue.createApp({
         el: '#app',
         data() {
             return {
+                theme: 'light',//暗黑模式
                 types: ["primary", "success", "warning", "danger"],
                 requestHeaders: {},
                 formDataHeaders: {},
@@ -219,6 +225,7 @@
         },
         created() {
             const that = this
+            that.theme = that.currentTheme()
             setTimeout(() => {
                 that.token();
                 //再计算RSA加密
@@ -543,6 +550,13 @@
                         that.editLabelsDialog.currentLabels.splice(that.editLabelsDialog.currentLabels.indexOf(item), 1)
                         that.editLabelsDialog.ableLabels.push(item)
                     })
+            },
+            currentTheme() {
+                let theme = localStorage.getItem("DARK-LIGHT-THEME");
+                if (theme == null || theme.length === 0){
+                    theme = 'light'
+                }
+                return theme
             }
         }
     }).use(vant).mount("#app");

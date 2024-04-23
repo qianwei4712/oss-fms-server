@@ -6,7 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="author" content="shiva"/>
     <meta name="renderer" content="webkit"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <link rel="stylesheet" type="text/css" th:href="@{/fms.css}" media="all">
@@ -18,25 +19,31 @@
 </head>
 <body>
 <div id="app">
-    <div style="width: 60%;margin: auto;text-align: center">
-        <div>
-            这里后面可以放一大的logo
-        </div>
-        <div style="width: 20%;margin: auto">
-            OSS的配置，可以做成配置的
+    <van-config-provider :theme="theme">
+        <div style="width: 60%;margin: auto;text-align: center">
             <div>
-                这里可以写一些说明
+                这里后面可以放一大的logo
+            </div>
+            <div style="width: 20%;margin: auto">
+                OSS的配置，可以做成配置的
+                <div>
+                    这里可以写一些说明
+                </div>
             </div>
         </div>
-    </div>
+    </van-config-provider>
 </div>
 <script>
     Vue.createApp({
         el: '#app',
         data() {
             return {
+                theme: 'light',//暗黑模式
                 pwd: ''
             }
+        },
+        created() {
+            this.theme = this.currentTheme()
         },
         methods: {
             passwordInit() {
@@ -45,6 +52,13 @@
                     this.$message.error('请先输入密码！')
                 }
                 window.location.href = '/m/pwdInit?pwd=' + this.pwd
+            },
+            currentTheme() {
+                let theme = localStorage.getItem("DARK-LIGHT-THEME");
+                if (theme == null || theme.length === 0) {
+                    theme = 'light'
+                }
+                return theme
             }
         }
     }).use(vant).mount("#app");

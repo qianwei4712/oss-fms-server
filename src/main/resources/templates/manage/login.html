@@ -6,7 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="author" content="shiva"/>
     <meta name="renderer" content="webkit"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <link rel="stylesheet" type="text/css" th:href="@{/fms.css}" media="all">
@@ -15,28 +16,35 @@
     <script th:src="@{/plugin/vant/vant.min.js}"></script>
     <link rel="icon" th:href="@{/images/favicon.ico}" type="image/x-icon"/>
     <link rel="shortcut icon" th:href="@{/images/favicon.ico}"/>
+    <script th:src="@{/static/common.js}"></script>
 </head>
 <body>
 <div id="app">
-    <div style="margin: auto;text-align: center">
-        <div>
-            <img src="/images/material/圣诞树.png" style="max-width: 80%"/>
+    <van-config-provider :theme="theme">
+        <div style="margin: auto;text-align: center">
+            <div>
+                <img src="/images/material/圣诞树.png" style="max-width: 80%"/>
+            </div>
+            <div style="margin: auto">
+                <input v-model="pwd" placeholder="请输入登录密码" class="pwd-init-input"/>
+                <br/>
+                <br/>
+                <van-button type="danger" @click="login">确认密码</van-button>
+            </div>
         </div>
-        <div style="margin: auto">
-            <input v-model="pwd" placeholder="请输入登录密码" class="pwd-init-input"/>
-            <br/>
-            <br/>
-            <van-button type="danger" @click="login">确认密码</van-button>
-        </div>
-    </div>
+    </van-config-provider>
 </div>
 <script>
     Vue.createApp({
         el: '#app',
         data() {
             return {
+                theme: 'light',//暗黑模式
                 pwd: ''
             }
+        },
+        created(){
+            this.theme = this.currentTheme()
         },
         methods: {
             login() {
@@ -49,6 +57,13 @@
                     return false;
                 }
                 window.location.href = '/m/login?pwd=' + this.pwd
+            },
+            currentTheme() {
+                let theme = localStorage.getItem("DARK-LIGHT-THEME");
+                if (theme == null || theme.length === 0){
+                    theme = 'light'
+                }
+                return theme
             }
         }
     }).use(vant).use(vant.Lazyload).mount("#app");

@@ -22,48 +22,52 @@
 </head>
 <body>
 <div id="app">
-
-    <div style="text-align: center">
-        <img src="/static/images/material/推婴儿车.png" style="max-width: 60%"/>
-    </div>
-
-    <van-grid :column-num="3">
-        <van-grid-item icon="coupon" text="标签管理" class="grid-green"
-                       @click="router('/m/page?type=labels')"></van-grid-item>
-        <van-grid-item icon="delete" text="回收站" class="grid-green"
-                       @click="router('/m/page?type=recovery')"></van-grid-item>
-        <van-grid-item icon="umbrella-circle" text="OSS数据初始化" class="grid-green"
-                       @click="ossInitConfirm"></van-grid-item>
-        <van-grid-item icon="gem" text="OSS差量导入" class="grid-green"
-                       @click="differentialImport.show = true"></van-grid-item>
-        <van-grid-item icon="weapp-nav" text="OSS配置" class="grid-green"
-                       @click="router('/m/page?type=ossParams')"></van-grid-item>
-        <van-grid-item icon="descending" text="数据导出"></van-grid-item>
-        <van-grid-item icon="ascending" text="数据导入"></van-grid-item>
-
-        <van-grid-item icon="stop-circle" text="修改密码" class="grid-green"
-                       @click="router('/m/page?type=password')"></van-grid-item>
-        <van-grid-item icon="sort" text="退出登录" class="grid-green" @click="logout"></van-grid-item>
-    </van-grid>
-
-    <van-dialog v-model:show="differentialImport.show" title="导入子文件夹"
-                @confirm="differentialImportStart()"
-                @open="differentialImport.path = ''"
-                show-cancel-button>
-        <input v-model="differentialImport.path" placeholder="请输入新路径" class="pwd-init-input"
-               style="margin: 30px 30px 10px 30px;width: 80%"/>
-        <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">
-            例如：novel/新文件夹/子文件夹/
+    <van-config-provider :theme="theme">
+        <div style="text-align: center">
+            <img src="/static/images/material/推婴儿车.png" style="max-width: 60%"/>
         </div>
-    </van-dialog>
 
-    <van-floating-bubble icon="wap-home" @click="homepage" style="color: white;background-color: green"/>
+        <van-grid :column-num="3">
+            <van-grid-item icon="coupon" text="标签管理" class="grid-green"
+                           @click="router('/m/page?type=labels')"></van-grid-item>
+            <van-grid-item icon="delete" text="回收站" class="grid-green"
+                           @click="router('/m/page?type=recovery')"></van-grid-item>
+            <van-grid-item icon="umbrella-circle" text="OSS数据初始化" class="grid-green"
+                           @click="ossInitConfirm"></van-grid-item>
+            <van-grid-item icon="gem" text="OSS差量导入" class="grid-green"
+                           @click="differentialImport.show = true"></van-grid-item>
+            <van-grid-item icon="weapp-nav" text="OSS配置" class="grid-green"
+                           @click="router('/m/page?type=ossParams')"></van-grid-item>
+            <van-grid-item icon="descending" text="数据导出"></van-grid-item>
+            <van-grid-item icon="ascending" text="数据导入"></van-grid-item>
+
+            <van-grid-item icon="stop-circle" text="修改密码" class="grid-green"
+                           @click="router('/m/page?type=password')"></van-grid-item>
+            <van-grid-item icon="bulb-o" text="模式切换" class="grid-green"
+                           @click="changeTheme"></van-grid-item>
+            <van-grid-item icon="sort" text="退出登录" class="grid-green" @click="logout"></van-grid-item>
+        </van-grid>
+
+        <van-dialog v-model:show="differentialImport.show" title="导入子文件夹"
+                    @confirm="differentialImportStart()"
+                    @open="differentialImport.path = ''"
+                    show-cancel-button>
+            <input v-model="differentialImport.path" placeholder="请输入新路径" class="pwd-init-input"
+                   style="margin: 30px 30px 10px 30px;width: 80%"/>
+            <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">
+                例如：novel/新文件夹/子文件夹/
+            </div>
+        </van-dialog>
+
+        <van-floating-bubble icon="wap-home" @click="homepage" style="color: white;background-color: green"/>
+    </van-config-provider>
 </div>
 <script>
     Vue.createApp({
         el: '#app',
         data() {
             return {
+                theme: 'light',//暗黑模式
                 requestHeaders: {},
                 differentialImport: {
                     show: false,
@@ -73,6 +77,7 @@
         },
         created() {
             const that = this
+            this.theme = this.currentTheme()
             setTimeout(() => {
                 that.requestHeaders = commonHeaders()
             }, 200)
@@ -124,6 +129,24 @@
                     .then(data => {
                         vt4.showNotify({type: 'success', message: '导入成功！'});
                     })
+            },
+            currentTheme() {
+                let theme = localStorage.getItem("DARK-LIGHT-THEME");
+                if (theme == null || theme.length === 0) {
+                    theme = 'light'
+                }
+                return theme
+            },
+            //切换模式
+            changeTheme() {
+                let theme = localStorage.getItem("DARK-LIGHT-THEME");
+                if (theme === 'light') {
+                    theme = 'dark'
+                } else {
+                    theme = 'light'
+                }
+                localStorage.setItem("DARK-LIGHT-THEME", theme)
+                this.theme = this.currentTheme()
             }
         }
     }).use(vant).mount("#app");

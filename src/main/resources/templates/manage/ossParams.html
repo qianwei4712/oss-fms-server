@@ -20,52 +20,53 @@
     <script th:src="@{/static/plugin/jsencrypt.min.js}"></script>
     <script th:src="@{/static/common.js}"></script>
 </head>
-<body style="background-color: #eaeaea">
+<body>
 <div id="app">
+    <van-config-provider :theme="theme">
+        <van-nav-bar
+                title="OSS 参数配置"
+                left-text="返回"
+                left-arrow
+                @click-left="onClickLeft"
+        ></van-nav-bar>
 
-    <van-nav-bar
-            title="OSS 参数配置"
-            left-text="返回"
-            left-arrow
-            @click-left="onClickLeft"
-    ></van-nav-bar>
+        <div style="margin-top: 15px" class="oss-params">
+            <van-cell-group inset>
+                <van-field v-model="ossParams.endpoint" label="endpoint" placeholder="请输入"></van-field>
+                <div class="oss-params-label">
+                    例如：https://oss-cn-hangzhou.aliyuncs.com
+                </div>
+                <van-field v-model="ossParams.accessKeyId" label="accessKeyId" placeholder="请输入"></van-field>
+                <div class="oss-params-label">
+                    阿里云OSS密钥ID
+                </div>
+                <van-field v-model="ossParams.accessKeySecret" label="accessKeySecret" placeholder="请输入"></van-field>
+                <div class="oss-params-label">
+                    阿里云OSS密钥值
+                </div>
+                <van-field v-model="ossParams.bucketName" label="bucketName" placeholder="请输入"></van-field>
+                <div class="oss-params-label">
+                    bucket空间名，例如：xiaoshuo，不需要带斜杠
+                </div>
+                <van-field v-model="ossParams.areaSuffix" label="areaSuffix" placeholder="请输入"></van-field>
+                <div class="oss-params-label" style="margin-bottom: 15px">
+                    链接后缀，例如：.oss-cn-hangzhou.aliyuncs.com/
+                </div>
+            </van-cell-group>
 
-    <div style="margin-top: 15px" class="oss-params">
-        <van-cell-group inset>
-            <van-field v-model="ossParams.endpoint" label="endpoint" placeholder="请输入"></van-field>
-            <div class="oss-params-label">
-                例如：https://oss-cn-hangzhou.aliyuncs.com
-            </div>
-            <van-field v-model="ossParams.accessKeyId" label="accessKeyId" placeholder="请输入"></van-field>
-            <div class="oss-params-label">
-                阿里云OSS密钥ID
-            </div>
-            <van-field v-model="ossParams.accessKeySecret" label="accessKeySecret" placeholder="请输入"></van-field>
-            <div class="oss-params-label">
-                阿里云OSS密钥值
-            </div>
-            <van-field v-model="ossParams.bucketName" label="bucketName" placeholder="请输入"></van-field>
-            <div class="oss-params-label">
-                bucket空间名，例如：xiaoshuo，不需要带斜杠
-            </div>
-            <van-field v-model="ossParams.areaSuffix" label="areaSuffix" placeholder="请输入"></van-field>
-            <div class="oss-params-label" style="margin-bottom: 15px">
-                链接后缀，例如：.oss-cn-hangzhou.aliyuncs.com/
-            </div>
-        </van-cell-group>
+        </div>
 
-    </div>
-
-    <div style="text-align: center;margin: 15px 25px">
-        <van-button type="primary" size="large" @click="saveOssParams">确 认 输 入</van-button>
-    </div>
-
+        <div style="text-align: center;margin: 15px 25px">
+            <van-button type="primary" size="large" @click="saveOssParams">确 认 输 入</van-button>
+        </div>
+    </van-config-provider>
 </div>
 <script>
     Vue.createApp({
         el: '#app',
         data() {
             return {
+                theme: 'light',//暗黑模式
                 requestHeaders: {},
                 ossParams: {
                     endpoint: '',
@@ -78,6 +79,7 @@
         },
         created() {
             const that = this
+            this.theme = that.currentTheme()
             setTimeout(() => {
                 that.requestHeaders = commonHeaders()
                 that.getOssParams();
@@ -110,6 +112,13 @@
                     .then(data => {
                         vt4.showNotify({type: 'success', message: '保存成功'});
                     })
+            },
+            currentTheme() {
+                let theme = localStorage.getItem("DARK-LIGHT-THEME");
+                if (theme == null || theme.length === 0){
+                    theme = 'light'
+                }
+                return theme
             }
         }
     }).use(vant).mount("#app");

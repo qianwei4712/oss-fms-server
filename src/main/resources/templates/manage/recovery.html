@@ -22,69 +22,74 @@
 </head>
 <body>
 <div id="app">
-    <div>
-        <!-- 文件树的区域 -->
-        <van-list
-                v-model:loading="treeData.loading"
-                :finished="treeData.finished"
-                finished-text="全部资源都在这里了~"
-                @load="onLoadTreeData"
-        >
-            <div style="margin: 10px">
-                <van-button type="danger" @click="allDelete" block>全部删除</van-button>
-            </div>
-            <van-cell v-for="item in treeData.list" :key="item">
-                <van-row>
-                    <van-col span="2">
-                        <div style="vertical-align: middle;line-height: 45px">
-                            <img v-if="item.type == 'file'" src="/static/images/icon/file.png" style="height: 35px">
-                            <img v-if="item.type == 'folder'" src="/static/images/icon/folder.png" style="height: 35px">
-                        </div>
-                    </van-col>
-                    <van-col span="20">
-                        <div style="text-align: left;margin-left: 15px" @click="openFunction(item)">
-                            <div style="font-weight: bold">{{item.name}}</div>
-                            <div>
-                                <van-row gutter="20">
-                                    <van-col span="18">
-                                        <div class="label-container">
-                                            {{item.realPath}}
-                                        </div>
-                                    </van-col>
-                                    <van-col span="6" style="font-size: 12px;text-align: right" v-if="item.size > 0">
-                                        {{item.size}} Kb
-                                    </van-col>
-                                </van-row>
+    <van-config-provider :theme="theme">
+        <div>
+            <!-- 文件树的区域 -->
+            <van-list
+                    v-model:loading="treeData.loading"
+                    :finished="treeData.finished"
+                    finished-text="全部资源都在这里了~"
+                    @load="onLoadTreeData"
+            >
+                <div style="margin: 10px">
+                    <van-button type="danger" @click="allDelete" block>全部删除</van-button>
+                </div>
+                <van-cell v-for="item in treeData.list" :key="item">
+                    <van-row>
+                        <van-col span="2">
+                            <div style="vertical-align: middle;line-height: 45px">
+                                <img v-if="item.type == 'file'" src="/static/images/icon/file.png" style="height: 35px">
+                                <img v-if="item.type == 'folder'" src="/static/images/icon/folder.png"
+                                     style="height: 35px">
                             </div>
-                        </div>
-                    </van-col>
-                    <van-col span="2">
-                        <div style="line-height: 45px;text-align: center" @click="openFunction(item)">
-                            <van-icon name="ellipsis"/>
-                        </div>
-                    </van-col>
-                </van-row>
-            </van-cell>
-        </van-list>
-    </div>
-
-    <!-- 底部弹窗 -->
-    <van-action-sheet v-model:show="funcDialog.show">
-        <div style="margin: 15px">
-            <van-grid square :column-num="2">
-                <van-grid-item icon="medal-o" text="还原" class="grid-blue" @click="recoveryFile"></van-grid-item>
-                <van-grid-item icon="delete-o" text="彻底删除" class="grid-blue"
-                               @click="completelyDelete"></van-grid-item>
-            </van-grid>
+                        </van-col>
+                        <van-col span="20">
+                            <div style="text-align: left;margin-left: 15px" @click="openFunction(item)">
+                                <div style="font-weight: bold">{{item.name}}</div>
+                                <div>
+                                    <van-row gutter="20">
+                                        <van-col span="18">
+                                            <div class="label-container">
+                                                {{item.realPath}}
+                                            </div>
+                                        </van-col>
+                                        <van-col span="6" style="font-size: 12px;text-align: right"
+                                                 v-if="item.size > 0">
+                                            {{item.size}} Kb
+                                        </van-col>
+                                    </van-row>
+                                </div>
+                            </div>
+                        </van-col>
+                        <van-col span="2">
+                            <div style="line-height: 45px;text-align: center" @click="openFunction(item)">
+                                <van-icon name="ellipsis"/>
+                            </div>
+                        </van-col>
+                    </van-row>
+                </van-cell>
+            </van-list>
         </div>
-    </van-action-sheet>
-    <van-floating-bubble icon="wap-home" @click="homepage" style="color: white;background-color: green"/>
+
+        <!-- 底部弹窗 -->
+        <van-action-sheet v-model:show="funcDialog.show">
+            <div style="margin: 15px">
+                <van-grid square :column-num="2">
+                    <van-grid-item icon="medal-o" text="还原" class="grid-blue" @click="recoveryFile"></van-grid-item>
+                    <van-grid-item icon="delete-o" text="彻底删除" class="grid-blue"
+                                   @click="completelyDelete"></van-grid-item>
+                </van-grid>
+            </div>
+        </van-action-sheet>
+        <van-floating-bubble icon="wap-home" @click="homepage" style="color: white;background-color: green"/>
+    </van-config-provider>
 </div>
 <script>
     Vue.createApp({
         el: '#app',
         data() {
             return {
+                theme: 'light',//暗黑模式
                 requestHeaders: {},
                 currentStatus: { //记录页面的基础状态
                     clickItem: null, //当前点击得对象
@@ -101,6 +106,7 @@
         },
         created() {
             const that = this
+            this.theme = this.currentTheme()
             setTimeout(() => {
                 that.requestHeaders = commonHeaders()
             }, 200)
@@ -196,6 +202,13 @@
                         })
                 }).catch(() => {
                 });
+            },
+            currentTheme() {
+                let theme = localStorage.getItem("DARK-LIGHT-THEME");
+                if (theme == null || theme.length === 0){
+                    theme = 'light'
+                }
+                return theme
             }
         }
     }).use(vant).mount("#app");

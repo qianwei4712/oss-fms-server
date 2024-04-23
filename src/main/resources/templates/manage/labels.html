@@ -22,52 +22,55 @@
 </head>
 <body>
 <div id="app">
-    <div>
-        <div style="margin: 10px 10px 0 10px">
-            <van-button type="danger" @click="addNewLabel" block>新增标签</van-button>
+    <van-config-provider :theme="theme">
+        <div>
+            <div style="margin: 10px 10px 0 10px">
+                <van-button type="danger" @click="addNewLabel" block>新增标签</van-button>
+            </div>
+            <!-- 标签列表区域 -->
+            <div style="padding: 25px 15px" class="label-list">
+                <van-tag v-for="(item, index) in listData"
+                         :type="randomType(index)"
+                         size="large"
+                         @click="openFunction(item)"
+                         style=" margin-right: 10px;margin-bottom: 5px;"
+                >
+                    {{item.name}}
+                </van-tag>
+            </div>
         </div>
-        <!-- 标签列表区域 -->
-        <div style="padding: 25px 15px" class="label-list">
-            <van-tag v-for="(item, index) in listData"
-                     :type="randomType(index)"
-                     size="large"
-                     @click="openFunction(item)"
-                     style=" margin-right: 10px;margin-bottom: 5px;"
-            >
-                {{item.name}}
-            </van-tag>
-        </div>
-    </div>
 
-    <van-dialog v-model:show="newLabelDialog.open" title="标签保存"
-                @confirm="actualSaveLabel()"
-                show-cancel-button>
-        <input v-model="newLabelDialog.value" placeholder="请输入新标签名" class="pwd-init-input"
-               style="margin: 30px 30px 10px 30px;width: 80%"/>
-        <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">
-            相同标签不会保存！
-        </div>
-    </van-dialog>
+        <van-dialog v-model:show="newLabelDialog.open" title="标签保存"
+                    @confirm="actualSaveLabel()"
+                    show-cancel-button>
+            <input v-model="newLabelDialog.value" placeholder="请输入新标签名" class="pwd-init-input"
+                   style="margin: 30px 30px 10px 30px;width: 80%"/>
+            <div style="margin-left: 30px;color: #8f8f8f;font-size: 12px;padding-bottom: 10px">
+                相同标签不会保存！
+            </div>
+        </van-dialog>
 
-    <!-- 底部弹窗 -->
-    <van-action-sheet v-model:show="funcDialog.show">
-        <div style="margin: 15px">
-            <van-grid square :column-num="2">
-                <van-grid-item icon="records-o" text="编辑" class="grid-blue" @click="editLabel"></van-grid-item>
-                <van-grid-item icon="delete-o" text="删除" class="grid-blue"
-                               @click="deleteLabel"></van-grid-item>
-            </van-grid>
-        </div>
-    </van-action-sheet>
+        <!-- 底部弹窗 -->
+        <van-action-sheet v-model:show="funcDialog.show">
+            <div style="margin: 15px">
+                <van-grid square :column-num="2">
+                    <van-grid-item icon="records-o" text="编辑" class="grid-blue" @click="editLabel"></van-grid-item>
+                    <van-grid-item icon="delete-o" text="删除" class="grid-blue"
+                                   @click="deleteLabel"></van-grid-item>
+                </van-grid>
+            </div>
+        </van-action-sheet>
 
-    <van-floating-bubble icon="wap-home" @click="homepage"
-                         style="color: white;background-color: green"></van-floating-bubble>
+        <van-floating-bubble icon="wap-home" @click="homepage"
+                             style="color: white;background-color: green"></van-floating-bubble>
+    </van-config-provider>
 </div>
 <script>
     Vue.createApp({
         el: '#app',
         data() {
             return {
+                theme: 'light',//暗黑模式
                 types: ["primary", "success", "danger", "warning"],
                 requestHeaders: {},
                 listData: [],//标签列表
@@ -86,6 +89,7 @@
         },
         created() {
             const that = this
+            this.theme = that.currentTheme()
             setTimeout(() => {
                 that.requestHeaders = commonHeaders()
                 that.listDataGet()
@@ -181,6 +185,13 @@
                         })
                 }).catch(() => {
                 });
+            },
+            currentTheme() {
+                let theme = localStorage.getItem("DARK-LIGHT-THEME");
+                if (theme == null || theme.length === 0){
+                    theme = 'light'
+                }
+                return theme
             }
         }
     }).use(vant).mount("#app");
