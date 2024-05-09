@@ -31,6 +31,7 @@
                     @search="onSearch"
                     action-text="返回"
                     show-action
+                    @clear="reSearchThisPage"
                     @cancel="back"
             ></van-search>
         </div>
@@ -100,6 +101,8 @@
                                    @click="reloadFolder" class="grid-blue"></van-grid-item>
                     <van-grid-item icon="upgrade" text="上传文件" v-if="currentStatus.clickItem.type === 'folder'"
                                    @click="uploadFileDialog(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
+                    <van-grid-item icon="share-o" text="名称搜索" v-if="currentStatus.clickItem.type === 'file'"
+                                   @click="nameSearch(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
                     <van-grid-item icon="delete-o" text="删除" @click="deleteNovel" class="grid-blue"></van-grid-item>
                 </van-grid>
             </div>
@@ -287,6 +290,11 @@
                 this.currentStatus.pageId = Number(this.currentStatus.oldPageId)
                 this.currentStatus.oldPageId = 0;
                 //清空数据先
+                this.treeData.list = []
+                this.pageDataGet()
+            },
+            //当前页重新搜索
+            reSearchThisPage() {
                 this.treeData.list = []
                 this.pageDataGet()
             },
@@ -550,6 +558,10 @@
                         that.editLabelsDialog.currentLabels.splice(that.editLabelsDialog.currentLabels.indexOf(item), 1)
                         that.editLabelsDialog.ableLabels.push(item)
                     })
+            },
+            nameSearch(item) {
+                this.searchStr = item.name.replace(".txt", "")
+                this.funcDialog.show = false
             },
             currentTheme() {
                 let theme = localStorage.getItem("DARK-LIGHT-THEME");
