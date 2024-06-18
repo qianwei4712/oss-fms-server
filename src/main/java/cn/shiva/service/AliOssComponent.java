@@ -189,6 +189,8 @@ public class AliOssComponent {
         listObjectsV2Request.setPrefix(prefix);
         // 设置正斜线（/）为文件夹的分隔符。
         listObjectsV2Request.setDelimiter("/");
+        // 最大返回数量
+        listObjectsV2Request.setMaxKeys(1000);
         // 发起列举请求。
         ListObjectsV2Result result = ossClient.listObjectsV2(listObjectsV2Request);
         return result;
