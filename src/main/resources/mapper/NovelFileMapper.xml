@@ -19,4 +19,11 @@
     <select id="listFolderParentId" resultType="cn.shiva.entity.NovelFile">
         SELECT * FROM novel_file WHERE parent_id = #{parentId} and type = 'folder' ORDER BY type desc, name
     </select>
+
+    <select id="listByLabelId" resultType="cn.shiva.entity.NovelFile">
+        SELECT * FROM novel_file opt
+        LEFT JOIN mid_file_label mfl ON mfl.file_id = opt.id
+        WHERE mfl.label_id = #{labelId}
+        ORDER BY opt.type DESC, opt.name
+    </select>
 </mapper>

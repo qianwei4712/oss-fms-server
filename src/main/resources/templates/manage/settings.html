@@ -30,6 +30,9 @@
         <van-grid :column-num="3">
             <van-grid-item icon="coupon" text="标签管理" class="grid-green"
                            @click="router('/m/page?type=labels')"></van-grid-item>
+            <!-- TODO 标签搜索还没做完 -->
+            <van-grid-item icon="fire" text="标签搜索" class="grid-green"
+                           @click="router('/m/page?type=labelSearch')"></van-grid-item>
             <van-grid-item icon="delete" text="回收站" class="grid-green"
                            @click="router('/m/page?type=recovery')"></van-grid-item>
             <van-grid-item icon="umbrella-circle" text="OSS数据初始化" class="grid-green"

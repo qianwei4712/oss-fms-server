@@ -31,4 +31,9 @@ public interface NovelFileMapper extends BaseMapper<NovelFile> {
      * 根据上级id，拿到文件夹列表
      */
     List<NovelFile> listFolderParentId(@Param("parentId") Long parentId);
+
+    /**
+     * 根据标签ID，获取文件列表
+     */
+    List<NovelFile> listByLabelId(@Param("labelId") Long labelId);
 }

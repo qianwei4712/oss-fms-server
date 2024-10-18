@@ -40,6 +40,8 @@ public class ManagePageController {
                 return "manage/ossParams";
             case "labels":
                 return "manage/labels";
+            case "labelSearch":
+                return "manage/labelSearch";
             default:
                 return "manage/index";
         }

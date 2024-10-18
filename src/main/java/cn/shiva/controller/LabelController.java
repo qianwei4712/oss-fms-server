@@ -1,9 +1,12 @@
 package cn.shiva.controller;
 
 import cn.shiva.core.domain.R;
+import cn.shiva.entity.NovelFile;
 import cn.shiva.entity.NovelLabel;
+import cn.shiva.mapper.NovelFileMapper;
 import cn.shiva.mapper.NovelLabelMapper;
 import cn.shiva.service.NovelService;
+import cn.shiva.utils.ThreadPool;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author shiva   2023-12-17 23:00
@@ -24,6 +29,10 @@ public class LabelController {
     private NovelLabelMapper novelLabelMapper;
     @Autowired
     private NovelService novelService;
+    @Autowired
+    private NovelFileMapper novelFileMapper;
+    @Autowired
+    private ThreadPool pool;
 
     /**
      * 返回全部的标签列表
@@ -104,6 +113,24 @@ public class LabelController {
         }
         novelLabelMapper.removeMidNovelLabel(novelId, labelId);
         return R.ok();
+    }
+
+    /**
+     * 根据标签，获取到文件列表
+     */
+    @GetMapping("listNovelByLabelId")
+    public R<List<NovelFile>> pageNovelAndFolder(Long labelId) throws InterruptedException {
+        List<NovelFile> list = novelFileMapper.listByLabelId(labelId);
+        //遍历，多线程获取数据
+        CountDownLatch latch = new CountDownLatch(list.size());
+        for (NovelFile novelFile : list) {
+            pool.instance().execute(() -> {
+                novelFile.setRealPath(novelFile.getOssPath().replace("novel/", "").replace(novelFile.getName(), ""));
+                latch.countDown();
+            });
+        }
+        boolean await = latch.await(15, TimeUnit.SECONDS);
+        return R.ok(list);
     }
 
 }
