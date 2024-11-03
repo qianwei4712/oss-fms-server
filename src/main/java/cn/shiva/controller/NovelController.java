@@ -8,11 +8,13 @@ import cn.shiva.mapper.NovelLabelMapper;
 import cn.shiva.service.AliOssComponent;
 import cn.shiva.service.NovelService;
 import cn.shiva.service.SqliteService;
+import cn.shiva.utils.CommonUtil;
 import cn.shiva.utils.ThreadPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -175,6 +177,16 @@ public class NovelController {
         return R.ok();
     }
 
-    //TODO 更新简述，其他信息不允许更新
+    /**
+     * 编码转换，将别的编码转为UTF8
+     */
+    @GetMapping("encodeTrans")
+    public R<String> encodeTrans(Long novelId) throws Exception {
+        File file = novelService.encodeTrans(novelId);
+        //文件转 multipart文件
+        MultipartFile multipartFile = CommonUtil.fileToMultipartFile(file, file.getName());
+        sqliteService.reUploadNovel(novelId, multipartFile);
+        return R.ok();
+    }
 
 }

@@ -103,6 +103,8 @@
                                    @click="uploadFileDialog(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
                     <van-grid-item icon="share-o" text="名称搜索" v-if="currentStatus.clickItem.type === 'file'"
                                    @click="nameSearch(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
+                    <van-grid-item icon="link-o" text="编码转换" v-if="currentStatus.clickItem.type === 'file'"
+                                   @click="encodeTrans(currentStatus.clickItem)" class="grid-blue"></van-grid-item>
                     <van-grid-item icon="delete-o" text="删除" @click="deleteNovel" class="grid-blue"></van-grid-item>
                 </van-grid>
             </div>
@@ -563,9 +565,22 @@
                 this.searchStr = item.name.replace(".txt", "")
                 this.funcDialog.show = false
             },
+            //编码转换
+            encodeTrans(){
+                const that = this
+                //发请求，获取目录
+                fetch('/api/novel/encodeTrans?novelId=' + that.currentStatus.clickItem.id, {
+                    method: 'GET',
+                    headers: that.requestHeaders,
+                }).then(response => response.json())
+                    .then(data => {
+                        vt4.showToast('编码转换成功！');
+                        that.funcDialog.show = false
+                    })
+            },
             currentTheme() {
                 let theme = localStorage.getItem("DARK-LIGHT-THEME");
-                if (theme == null || theme.length === 0){
+                if (theme == null || theme.length === 0) {
                     theme = 'light'
                 }
                 return theme

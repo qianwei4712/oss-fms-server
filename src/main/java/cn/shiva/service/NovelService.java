@@ -7,12 +7,16 @@ import cn.shiva.entity.NovelLabel;
 import cn.shiva.mapper.FileRecoveryMapper;
 import cn.shiva.mapper.NovelFileMapper;
 import cn.shiva.mapper.NovelLabelMapper;
+import cn.shiva.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.File;
+import java.util.Locale;
 
 /**
  * 文件相关服务
@@ -128,5 +132,21 @@ public class NovelService {
         //两边一起删
         labelMapper.deleteById(labelId);
         labelMapper.deleteByLabelId(labelId);
+    }
+
+    /**
+     * 编码转换，下载文件，然后转换编码为UTF8
+     */
+    public File encodeTrans(Long novelId) throws Exception {
+        //拿到对应的文件
+        NovelFile novelFile = novelFileMapper.selectById(novelId);
+        File sourceFile = ossComponent.fileDownload(novelFile.getOssPath(), novelFile.getName());
+        //拿到编码
+        String fileCharset = CommonUtil.LocalCharsetUtil.getFileCharset(sourceFile);
+        if ("UTF-8".equals(fileCharset.toUpperCase(Locale.ROOT))) {
+            return sourceFile;
+        }
+        //已经转化完毕的文件
+        return CommonUtil.reEncode2UTF8(sourceFile);
     }
 }

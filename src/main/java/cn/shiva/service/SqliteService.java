@@ -310,4 +310,21 @@ public class SqliteService {
         upload.setParentId(folderId);
         novelFileMapper.insert(upload);
     }
+
+    /**
+     * 文件重新上传，更新一下大小就行了
+     */
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void reUploadNovel(Long novelId, MultipartFile file) throws Exception {
+        //文件
+        NovelFile novelFile = novelFileMapper.selectById(novelId);
+        //上传文件
+        String pathWithoutName = novelFile.getOssPath().replace(novelFile.getName(), "");
+        NovelFile upload = ossComponent.upload(pathWithoutName, file, "false");
+        //更新大小
+        novelFile.setSize(CommonUtil.calcFileSize(file.getSize()));
+        novelFileMapper.updateById(upload);
+    }
+
+
 }

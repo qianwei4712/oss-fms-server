@@ -47,6 +47,18 @@ public class AliOssComponent {
      * @return 阿里云OSS的全路径
      */
     public NovelFile upload(String folderName, MultipartFile file) throws Exception {
+        return upload(folderName, file, "true");
+    }
+
+    /**
+     * 文件上传，禁止覆盖同名文件、只允许上传TXT
+     *
+     * @param folderName      文件夹名称，拼接在文件名中，逐级拼接，全部都有
+     * @param file            上传文件
+     * @param forbidOverwrite 是否允许覆盖上传，字符串 true(禁止覆盖)、false(允许覆盖)
+     * @return 阿里云OSS的全路径
+     */
+    public NovelFile upload(String folderName, MultipartFile file, String forbidOverwrite) throws Exception {
         if (file == null || file.getSize() == 0) {
             throw new Exception("未检测到上传文件，请检查文件是否正确！");
         }
@@ -73,7 +85,7 @@ public class AliOssComponent {
 
         ObjectMetadata metadata = new ObjectMetadata();
         //禁止覆盖
-        metadata.setHeader("x-oss-forbid-overwrite", "true");
+        metadata.setHeader("x-oss-forbid-overwrite", forbidOverwrite);
         metadata.setHeader("Content-Type", "text/plain;charset=utf-8");
         PutObjectResult putObjectResult = ossClient.putObject(bucketName, name, finalFile, metadata);
         //拼接路径返回
@@ -84,6 +96,7 @@ public class AliOssComponent {
 
         return NovelFile.builder().name(originalFilename).type("file").lastModifyTime(DateUtils.format(new Date())).ossPath(name).filePath(url).build();
     }
+
 
     /**
      * 获得临时访问路径，有效期5分钟
