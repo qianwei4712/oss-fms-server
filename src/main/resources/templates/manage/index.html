@@ -87,7 +87,7 @@
         <!-- 底部弹窗 -->
         <van-action-sheet v-model:show="funcDialog.show">
             <div style="margin: 15px">
-                <van-grid square :column-num="3">
+                <van-grid square :column-num="4">
                     <van-grid-item icon="medal-o" text="下载" @click="download"
                                    v-if="currentStatus.clickItem.type === 'file'" class="grid-blue"></van-grid-item>
                     <van-grid-item icon="comment-o" text="打标签" @click="editLabelsOpen"
