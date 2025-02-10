@@ -259,6 +259,7 @@
                 window.location.href = '/m/page?type=settings'
             },
             onSearch() {
+                this.searchStr = this.searchStr.trim()
                 if (this.searchStr == null || this.searchStr.length === 0) {
                     vt4.showToast('请输入搜索内容');
                     return false
