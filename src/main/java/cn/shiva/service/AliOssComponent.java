@@ -239,6 +239,17 @@ public class AliOssComponent {
     }
 
     /**
+     * 因为加了一个项目启动后，默认同步一下OSS的文件目录
+     * <p>因为我在阿里云搞了一个镜像，使用镜像创建临时服务器，用来节省服务器成本<p/>
+     * <p>但是创建之后，sqlite还是旧的数据，所以需要同步；</p>
+     * 这时候会影响其他情况，OSS还没准备好、还没有建立链接
+     */
+    public boolean clientExists() {
+        initClient();
+        return ossClient != null;
+    }
+
+    /**
      * 在更新了OSS配置之后，需要重新获取OSS链接
      */
     public void cleanClient() {

@@ -48,6 +48,10 @@ public class SqliteService {
      * 4.然后开始递归，文件夹的下一级，搞好上级关联
      */
     public void initFromOss() {
+        if (!ossComponent.clientExists()) {
+            log.info("阿里云链接尚未建立，密钥可能未配置");
+            return;
+        }
         int i = sqliteMapper.clearNovel();
         log.info("清理文件共：{}", i);
         int labelNum = sqliteMapper.clearNovelLabel();
