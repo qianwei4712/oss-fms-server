@@ -245,6 +245,9 @@ public class AliOssComponent {
      * 这时候会影响其他情况，OSS还没准备好、还没有建立链接
      */
     public boolean clientExists() {
+        if (StringUtils.isBlank(accessKeyId)) {
+            return false;
+        }
         initClient();
         return ossClient != null;
     }

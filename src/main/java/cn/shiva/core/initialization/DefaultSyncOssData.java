@@ -3,12 +3,14 @@ package cn.shiva.core.initialization;
 import cn.shiva.service.SqliteService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 /**
  * @author shiva   2025-04-11 13:28
  */
 @Component
+@DependsOn("sqliteTableInit")
 public class DefaultSyncOssData {
 
     @Autowired

@@ -42,6 +42,10 @@ public class ConfigService {
         String password = (String) CacheUtil.get("password");
         if (StringUtils.isBlank(password)) {
             password = configMapper.key("password");
+            if (StringUtils.isBlank(password)) {
+                //第一次登录，无法传入null
+                return null;
+            }
             CacheUtil.put("password", password);
         }
         return password;

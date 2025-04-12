@@ -75,7 +75,7 @@ public class ManagePageController {
         }
         //密码判断
         String password = configService.password();
-        if (!pwd.equals(password)) {
+        if (!pwd.equals(password) || StringUtils.isBlank(password)) {
             //密码不对
             return "manage/login";
         }
