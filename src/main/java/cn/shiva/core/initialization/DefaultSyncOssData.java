@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
  * @author shiva   2025-04-11 13:28
  */
 @Component
-@DependsOn("sqliteTableInit")
+@DependsOn({"sqliteTableInit", "aliOssComponent"})
 public class DefaultSyncOssData {
 
     @Autowired
     private SqliteService sqliteService;
-    
+
     /**
      * 搞了一个服务器镜像，在需要的时候按时按量启动服务
      * 但是出现一个问题；镜像回复的内容，不会更新数据库

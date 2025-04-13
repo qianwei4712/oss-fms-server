@@ -58,6 +58,10 @@ public class SqliteService {
         log.info("清理标签关系共：{}", labelNum);
         //开始递归
         listOss2Db("novel/", 0L);
+        //回收站的文件树也需要同步
+        int s = recoveryMapper.clearRecover();
+        log.info("清理回收站文件文件共：{}", s);
+        recoverFileToRecovery("recovery/");
     }
 
     /**
@@ -101,6 +105,37 @@ public class SqliteService {
         }
     }
 
+    /**
+     * 拿到全部的回收站列表，重置回回收站
+     */
+    public void recoverFileToRecovery(String prefix) {
+        //拿到全部的回收站下的文件
+        ListObjectsV2Result listObjectsV2Result = ossComponent.listObjects(prefix);
+        // objectSummaries的列表中给出的是目录下的文件:
+        for (OSSObjectSummary objectSummary : listObjectsV2Result.getObjectSummaries()) {
+            String key = objectSummary.getKey();
+            //回收站的路径
+            FileRecovery recovery = FileRecovery.builder()
+                    .name(CommonUtil.getNameFromPath(key))
+                    .size(CommonUtil.calcFileSize(objectSummary.getSize()))
+                    .type("file")
+                    .lastModifyTime(DateUtils.format(objectSummary.getLastModified()))
+                    .ossPath(key)
+                    .filePath("https://" + ossComponent.getBucketName() + ossComponent.getAreaSuffix() + key)
+                    .build();
+            //在OSS创建的文件夹，会附带一个空文件，这个就不保存了
+            if (StringUtils.isBlank(recovery.getName()) && recovery.getSize() == 0) {
+                continue;
+            }
+            //加入记录
+            recoveryMapper.insert(recovery);
+        }
+
+        // 遍历文件夹，进入下一级；
+        for (String commonPrefix : listObjectsV2Result.getCommonPrefixes()) {
+            recoverFileToRecovery(commonPrefix);
+        }
+    }
 
     /**
      * 删除文件或者文件夹，进入回收站;
@@ -142,6 +177,17 @@ public class SqliteService {
         ossComponent.deleteObject(fileRecovery.getOssPath());
         //最后删除数据库
         recoveryMapper.deleteById(fileRecovery);
+    }
+
+    /**
+     * 彻底删除全部回收站的文件
+     */
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public void deleteAllFromRecovery() {
+        List<FileRecovery> list = recoveryMapper.listAll();
+        for (FileRecovery item : list) {
+            completelyDeleteFile(item.getId());
+        }
     }
 
     /**

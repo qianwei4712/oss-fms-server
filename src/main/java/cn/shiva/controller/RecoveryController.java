@@ -71,10 +71,7 @@ public class RecoveryController {
      */
     @GetMapping("allDelete")
     public R<String> allDelete() {
-        List<FileRecovery> list = recoveryMapper.listAll();
-        for (FileRecovery item : list) {
-            sqliteService.completelyDeleteFile(item.getId());
-        }
+        sqliteService.deleteAllFromRecovery();
         return R.ok();
     }
 
